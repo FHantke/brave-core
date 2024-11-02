@@ -12,6 +12,18 @@
 
 namespace brave_page_graph {
 
+/// The DOM root indicates the root node of a document.
+
+/// The DOM root is the child node of a [parser](\ref brave_page_graph::NodeParser) node connected via a [create node](\ref brave_page_graph::EdgeNodeCreate) edge.
+/// The node contains the URL the DOM belongs to.
+/// Its child node is the HTML element <html> that is connected via the [structure](\ref brave_page_graph::EdgeStructure) edge.
+/// It follows HEAD, BODY, and the rest of the document structure as a DOM tree structure connected via [structure](\ref brave_page_graph::EdgeStructure) edges.
+/// All such HTML elements are inserted by the [parser](\ref brave_page_graph::NodeParser) node.
+
+/// In the PageGraph, there is at least one DOM root for about:blank and one for the crawled top-level request.
+
+/// This node has a node id attribute. It is used with the [insert node](\ref brave_page_graph::EdgeNodeInsert) edge to represent the structure of the DOM.
+
 class NodeDOMRoot final : public NodeHTMLElement {
  public:
   NodeDOMRoot(GraphItemContext* context,
