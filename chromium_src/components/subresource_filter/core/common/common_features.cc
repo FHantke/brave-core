@@ -10,7 +10,7 @@
 namespace subresource_filter {
 
 OVERRIDE_FEATURE_DEFAULT_STATES({{
-    {kAdTagging, base::FEATURE_DISABLED_BY_DEFAULT},
+    {kAdTagging, base::FEATURE_ENABLED_BY_DEFAULT},
 }});
 
 }  // namespace subresource_filter

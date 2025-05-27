@@ -14,9 +14,15 @@
 #include "third_party/blink/renderer/modules/battery/battery_dispatcher.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 
+#include "third_party/blink/renderer/core/frame/ad_tracker.h"
+
+#include "third_party/blink/renderer/core/inspector/console_message.h"
+
 namespace blink {
 
 const char BatteryManager::kSupplementName[] = "BatteryManager";
+bool is_ad_script_ = false;
+
 
 // static
 ScriptPromise<BatteryManager> BatteryManager::getBattery(
@@ -47,6 +53,23 @@ BatteryManager::BatteryManager(Navigator& navigator)
 
 ScriptPromise<BatteryManager> BatteryManager::StartRequest(
     ScriptState* script_state) {
+
+  LOG(ERROR) << "BatteryManager::StartRequest 1";
+  ExecutionContext* context = ExecutionContext::From(script_state);
+  LOG(ERROR) << "BatteryManager::StartRequest 2";
+  AdTracker* tracker = AdTracker::FromExecutionContext(context);
+  LOG(ERROR) << "BatteryManager::StartRequest 3";
+  bool is_ad = tracker && tracker->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop);
+  LOG(ERROR) << "[Battery API] Called from ad? " << (is_ad ? "YES" : "NO");
+  is_ad_script_ = is_ad;
+
+  // Log to DevTools console
+  String console_message = String::Format("[Battery API] Called from ad? %s", is_ad ? "YES" : "NO");
+  context->AddConsoleMessage(
+      MakeGarbageCollected<ConsoleMessage>(
+          mojom::ConsoleMessageSource::kOther,
+          mojom::ConsoleMessageLevel::kInfo, console_message));
+
   if (!battery_property_) {
     battery_property_ = MakeGarbageCollected<BatteryProperty>(
         ExecutionContext::From(script_state));
@@ -56,6 +79,7 @@ ScriptPromise<BatteryManager> BatteryManager::StartRequest(
 }
 
 bool BatteryManager::charging() {
+  LOG(ERROR) << "BatteryManager::charging";
   return true;
 }
 
@@ -68,7 +92,8 @@ double BatteryManager::dischargingTime() {
 }
 
 double BatteryManager::level() {
-  return 1.0;
+  // return 1.0;
+  return is_ad_script_ ? 0.42 : 1.0;
 }
 
 void BatteryManager::DidUpdateData() {
