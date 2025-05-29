@@ -5,10 +5,8 @@ This document shows all the changes and improvements made in each version of
 
 ## Version 0.7.5
 
-Fix an issue with `security origin` for documents not attached to any frame.
-Instead of `document->TopFrameOrigin()`, the patch checks the security origin
-for the document's execution context via `GetSecurityOrigin()` and sets the
-security origin for `NodeDOMRoot` only if an origin is returned.
+Fix crashing issue where a disconnected document can cause a crash because
+of an error in how the `security origin` was determined by Pagegraph.
 
 ## Version 0.7.4
 
