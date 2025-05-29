@@ -195,7 +195,7 @@ namespace blink {
 
 namespace {
 
-constexpr char kPageGraphVersion[] = "0.7.4";
+constexpr char kPageGraphVersion[] = "0.7.5";
 constexpr char kPageGraphUrl[] =
     "https://github.com/brave/brave-browser/wiki/PageGraph";
 
@@ -1308,8 +1308,12 @@ void PageGraph::RegisterDocumentNodeCreated(blink::Document* document) {
     source_url_ = url;
   }
 
-  auto security_origin = document->TopFrameOrigin();
-  dom_root->SetSecurityOrigin(security_origin->ToString());
+  if (document->GetExecutionContext()) {
+    const auto* security_origin = document->GetExecutionContext()->GetSecurityOrigin();
+    if (security_origin) {
+        dom_root->SetSecurityOrigin(security_origin->ToString());
+    }
+  }
 
   auto execution_context_nodes_it =
       execution_context_nodes_.find(execution_context);

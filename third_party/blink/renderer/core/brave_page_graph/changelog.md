@@ -3,6 +3,13 @@
 This document shows all the changes and improvements made in each version of
 [Page Graph](https://github.com/brave/brave-browser/wiki/PageGraph).
 
+## Version 0.7.5
+
+Fix an issue with `security origin` for documents not attached to any frame.
+Instead of `document->TopFrameOrigin()`, the patch checks the security origin
+for the document's execution context via `GetSecurityOrigin()` and sets the
+security origin for `NodeDOMRoot` only if an origin is returned.
+
 ## Version 0.7.4
 
 Add `security origin` attribute for `NodeDOMRoot` objects, to explicitly
