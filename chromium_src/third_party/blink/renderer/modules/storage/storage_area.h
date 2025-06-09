@@ -17,8 +17,21 @@
  private:                                                    \
   void RecordModificationInMetrics
 
+#define setItem                     \
+setItem_ChromiumImpl(const String& key, \
+  const String& value, \
+  ExceptionState&); \
+NamedPropertySetterResult setItem
+
+#define getItem \
+getItem_ChromiumImpl(const String& key, \
+  ExceptionState&) const; \
+String getItem
+
 #include "src/third_party/blink/renderer/modules/storage/storage_area.h"  // IWYU pragma: export
 
+#undef getItem
+#undef setItem
 #undef RecordModificationInMetrics
 
 #include "brave/third_party/blink/renderer/core/brave_page_graph/blink_converters.h"
