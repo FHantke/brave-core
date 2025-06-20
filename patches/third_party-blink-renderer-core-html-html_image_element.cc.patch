@@ -1,0 +1,13 @@
+diff --git a/third_party/blink/renderer/core/html/html_image_element.cc b/third_party/blink/renderer/core/html/html_image_element.cc
+index c742a6a7d80d89e50a7adfab7a301f96f79aae04..8e08269c70ec4cae7dd38cc35715b8d8ccdb2a35 100644
+--- a/third_party/blink/renderer/core/html/html_image_element.cc
++++ b/third_party/blink/renderer/core/html/html_image_element.cc
+@@ -992,7 +992,7 @@ void HTMLImageElement::ForceReload() const {
+   GetImageLoader().UpdateFromElement(ImageLoader::kUpdateForcedReload);
+ }
+ 
+-void HTMLImageElement::SelectSourceURL(
++void HTMLImageElement::SelectSourceURL_ChromiumImpl(
+     ImageLoader::UpdateFromElementBehavior behavior) {
+   if (!GetDocument().IsActive())
+     return;
