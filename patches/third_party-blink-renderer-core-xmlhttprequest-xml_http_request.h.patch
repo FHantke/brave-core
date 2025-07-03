@@ -1,0 +1,12 @@
+diff --git a/third_party/blink/renderer/core/xmlhttprequest/xml_http_request.h b/third_party/blink/renderer/core/xmlhttprequest/xml_http_request.h
+index 5a0c35873c55270026469a6fc91b50f0fe1a60f6..5e8346af63880bd113bcc605ae6be68d8daf1e52 100644
+--- a/third_party/blink/renderer/core/xmlhttprequest/xml_http_request.h
++++ b/third_party/blink/renderer/core/xmlhttprequest/xml_http_request.h
+@@ -235,6 +235,7 @@ class CORE_EXPORT XMLHttpRequest final
+   void ThrowForLoadFailureIfNeeded(ExceptionState&, const String&);
+ 
+   bool InitSend(ExceptionState&);
++  bool InitSend_ChromiumImpl(ExceptionState&);
+   void SendBytesData(base::span<const uint8_t>, ExceptionState&);
+   void send(Document*, ExceptionState&);
+   void send(const String&, ExceptionState&);

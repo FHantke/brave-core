@@ -1,0 +1,14 @@
+diff --git a/third_party/blink/renderer/modules/storage/storage_namespace.cc b/third_party/blink/renderer/modules/storage/storage_namespace.cc
+index f097dc84915910c8b9b2e1646f631c70ed4977a1..361c875aa2e9342b5ab48f574a8eef2503bea2c5 100644
+--- a/third_party/blink/renderer/modules/storage/storage_namespace.cc
++++ b/third_party/blink/renderer/modules/storage/storage_namespace.cc
+@@ -73,7 +73,8 @@ void StorageNamespace::ProvideSessionStorageNamespaceTo(
+ scoped_refptr<CachedStorageArea> StorageNamespace::GetCachedArea(
+     LocalDOMWindow* local_dom_window,
+     mojo::PendingRemote<mojom::blink::StorageArea> storage_area,
+-    StorageContext context) {
++    StorageContext context,
++    bool ad_context) {
+   // These values are persisted to logs. Entries should not be renumbered and
+   // numeric values should never be reused.
+   enum class CacheMetrics {

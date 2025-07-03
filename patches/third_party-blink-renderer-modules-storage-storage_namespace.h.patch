@@ -1,0 +1,22 @@
+diff --git a/third_party/blink/renderer/modules/storage/storage_namespace.h b/third_party/blink/renderer/modules/storage/storage_namespace.h
+index 470fc8aa85bcfca7baae667a8628f73fa8911414..dc88bd7619f2346fe16f310b9f766dc010ce8322 100644
+--- a/third_party/blink/renderer/modules/storage/storage_namespace.h
++++ b/third_party/blink/renderer/modules/storage/storage_namespace.h
+@@ -85,7 +85,8 @@ class MODULES_EXPORT StorageNamespace final
+   scoped_refptr<CachedStorageArea> GetCachedArea(
+       LocalDOMWindow* local_dom_window,
+       mojo::PendingRemote<mojom::blink::StorageArea> storage_area = {},
+-      StorageContext context = StorageContext::kStandard);
++      StorageContext context = StorageContext::kStandard,
++      bool ad_context = false);
+ 
+   scoped_refptr<CachedStorageArea> CreateCachedAreaForPrerender(
+       LocalDOMWindow* local_dom_window,
+@@ -136,6 +137,7 @@ class MODULES_EXPORT StorageNamespace final
+   // Lives globally.
+   raw_ptr<StorageController> controller_;
+   String namespace_id_;
++  base::UnguessableToken nonce_;
+   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+   // `StorageNamespace` is a per-Page object and doesn't have any
+   // `ExecutionContext`.

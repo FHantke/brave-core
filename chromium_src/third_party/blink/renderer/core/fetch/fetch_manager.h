@@ -13,7 +13,7 @@
     ExceptionState&); \
  ScriptPromise<Response> Fetch
 
- #include "src/third_party/blink/renderer/core/fetch/fetch_manager.h" 
+ #include "src/third_party/blink/renderer/core/fetch/fetch_manager.h"  // IWYU pragma: export
  #undef Fetch
 
  #endif  // BRAVE_CHROMIUM_SRC_THIRD_PARTY_BLINK_RENDERER_CORE_FETCH_FETCH_MANAGER_H_

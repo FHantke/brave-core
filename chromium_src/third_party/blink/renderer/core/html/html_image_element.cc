@@ -26,7 +26,7 @@ void HTMLImageElement::SelectSourceURL(
     << ", is ad: " << is_ad
     << ", is ad frame: " << is_ad_frame;
 
-    if (is_ad) {
+    if (is_ad || is_ad_frame) {
         LOG(ERROR) << "[HTMLImageElement::SelectSourceURL] Blocked image load from JS context.";
         return;
     }

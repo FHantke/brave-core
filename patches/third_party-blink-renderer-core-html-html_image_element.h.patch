@@ -1,0 +1,12 @@
+diff --git a/third_party/blink/renderer/core/html/html_image_element.h b/third_party/blink/renderer/core/html/html_image_element.h
+index 7e6ed8071f92ce2d869357b461164f02534e1670..0239f7e0c8a0ad8d54c595095a5922516851b23d 100644
+--- a/third_party/blink/renderer/core/html/html_image_element.h
++++ b/third_party/blink/renderer/core/html/html_image_element.h
+@@ -221,6 +221,7 @@ class CORE_EXPORT HTMLImageElement
+   bool AreAuthorShadowsAllowed() const override { return false; }
+ 
+   void ParseAttribute(const AttributeModificationParams&) override;
++  void ParseAttribute_Orig(const AttributeModificationParams&);
+   bool IsPresentationAttribute(const QualifiedName&) const override;
+   void CollectStyleForPresentationAttribute(
+       const QualifiedName&,

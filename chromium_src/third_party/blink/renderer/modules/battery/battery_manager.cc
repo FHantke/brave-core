@@ -54,11 +54,11 @@ BatteryManager::BatteryManager(Navigator& navigator)
 ScriptPromise<BatteryManager> BatteryManager::StartRequest(
     ScriptState* script_state) {
 
-  LOG(ERROR) << "BatteryManager::StartRequest 1";
+  // LOG(ERROR) << "BatteryManager::StartRequest 1";
   ExecutionContext* context = ExecutionContext::From(script_state);
-  LOG(ERROR) << "BatteryManager::StartRequest 2";
+  // LOG(ERROR) << "BatteryManager::StartRequest 2";
   AdTracker* tracker = AdTracker::FromExecutionContext(context);
-  LOG(ERROR) << "BatteryManager::StartRequest 3";
+  // LOG(ERROR) << "BatteryManager::StartRequest 3";
   bool is_ad = tracker && tracker->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop);
   LOG(ERROR) << "[Battery API] Called from ad? " << (is_ad ? "YES" : "NO");
   is_ad_script_ = is_ad;

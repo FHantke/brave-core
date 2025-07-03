@@ -1,0 +1,13 @@
+diff --git a/third_party/blink/renderer/core/xmlhttprequest/xml_http_request.cc b/third_party/blink/renderer/core/xmlhttprequest/xml_http_request.cc
+index 76d628bdeea3b15c3b6ba51fae2abcd293645ba0..be6a5b3dd3a701014d79358000dcb49ff59e681d 100644
+--- a/third_party/blink/renderer/core/xmlhttprequest/xml_http_request.cc
++++ b/third_party/blink/renderer/core/xmlhttprequest/xml_http_request.cc
+@@ -720,7 +720,7 @@ void XMLHttpRequest::open(const AtomicString& method,
+     state_ = kOpened;
+ }
+ 
+-bool XMLHttpRequest::InitSend(ExceptionState& exception_state) {
++bool XMLHttpRequest::InitSend_ChromiumImpl(ExceptionState& exception_state) {
+   // We need to check ContextDestroyed because it is possible to create a
+   // XMLHttpRequest with already detached document.
+   // TODO(yhirano): Fix this.

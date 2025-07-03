@@ -1,8 +1,25 @@
 diff --git a/third_party/blink/renderer/platform/runtime_enabled_features.json5 b/third_party/blink/renderer/platform/runtime_enabled_features.json5
+<<<<<<< HEAD
 index 93c9798d3de30df26314deb87d1ccd0fac7f2336..1e0fe712012dd6ae457bf7f4551ddbdd124c10d5 100644
 --- a/third_party/blink/renderer/platform/runtime_enabled_features.json5
 +++ b/third_party/blink/renderer/platform/runtime_enabled_features.json5
 @@ -2193,6 +2193,7 @@
+=======
+index 773ed8ed9a43678d28dc7f5d86479d0f7c010a8f..c40a6549bd74c7837f8eb16fa74bfbde2b5790e7 100644
+--- a/third_party/blink/renderer/platform/runtime_enabled_features.json5
++++ b/third_party/blink/renderer/platform/runtime_enabled_features.json5
+@@ -312,8 +312,7 @@
+     {
+       name: "AdTagging",
+       public: true,
+-      status: "test",
+-      base_feature: "none",
++      status: "stable",
+     },
+     {
+       name: "AIPageContentPaidContentAnnotation",
+@@ -2120,6 +2119,7 @@
+>>>>>>> 72a372f7ee3 (add additional patches)
        // In-development features for the File System Access API.
        name: "FileSystemAccessAPIExperimental",
        status: "experimental",
@@ -10,7 +27,11 @@ index 93c9798d3de30df26314deb87d1ccd0fac7f2336..1e0fe712012dd6ae457bf7f4551ddbdd
      },
      {
        // The FileSystemHandle.getCloudIdentifiers() method (see
+<<<<<<< HEAD
 @@ -2207,6 +2208,7 @@
+=======
+@@ -2134,6 +2134,7 @@
+>>>>>>> 72a372f7ee3 (add additional patches)
        // Non-OPFS File System Access API.
        name: "FileSystemAccessLocal",
        status: {"default": "stable"},
@@ -18,7 +39,11 @@ index 93c9798d3de30df26314deb87d1ccd0fac7f2336..1e0fe712012dd6ae457bf7f4551ddbdd
      },
      {
        name: "FileSystemAccessLockingScheme",
+<<<<<<< HEAD
 @@ -3134,6 +3136,7 @@
+=======
+@@ -2979,6 +2980,7 @@
+>>>>>>> 72a372f7ee3 (add additional patches)
      {
        name: "MiddleClickAutoscroll",
        status: "test",

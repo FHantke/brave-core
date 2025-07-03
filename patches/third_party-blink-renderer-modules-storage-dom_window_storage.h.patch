@@ -1,0 +1,13 @@
+diff --git a/third_party/blink/renderer/modules/storage/dom_window_storage.h b/third_party/blink/renderer/modules/storage/dom_window_storage.h
+index 2a88886097fe6c2daaaeeded819a5a1ece25748c..ea44384464b929d9dd762cbe50036ad1f42f7920 100644
+--- a/third_party/blink/renderer/modules/storage/dom_window_storage.h
++++ b/third_party/blink/renderer/modules/storage/dom_window_storage.h
+@@ -53,6 +53,8 @@ class DOMWindowStorage final : public GarbageCollected<DOMWindowStorage>,
+       mojo::PendingRemote<mojom::blink::StorageArea> storage_area_for_init)
+       const;
+ 
++  mutable Member<StorageArea> session_ad_storage_;
++  mutable Member<StorageArea> local_ad_storage_;
+   mutable Member<StorageArea> session_storage_;
+   mutable Member<StorageArea> local_storage_;
+ };

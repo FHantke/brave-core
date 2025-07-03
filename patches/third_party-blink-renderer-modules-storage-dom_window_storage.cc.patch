@@ -1,0 +1,32 @@
+diff --git a/third_party/blink/renderer/modules/storage/dom_window_storage.cc b/third_party/blink/renderer/modules/storage/dom_window_storage.cc
+index 23e1819080138c1bb569e434938e4ccbf2de5f29..cf1a8440cdca0f0b398aaaa45c64afc77a1a31bf 100644
+--- a/third_party/blink/renderer/modules/storage/dom_window_storage.cc
++++ b/third_party/blink/renderer/modules/storage/dom_window_storage.cc
+@@ -26,7 +26,9 @@ DOMWindowStorage::DOMWindowStorage(LocalDOMWindow& window)
+ 
+ void DOMWindowStorage::Trace(Visitor* visitor) const {
+   visitor->Trace(session_storage_);
++  visitor->Trace(session_ad_storage_);
+   visitor->Trace(local_storage_);
++  visitor->Trace(local_ad_storage_);
+   Supplement<LocalDOMWindow>::Trace(visitor);
+ }
+ 
+@@ -106,7 +108,7 @@ void DOMWindowStorage::InitLocalStorage(
+                           std::move(storage_area));
+ }
+ 
+-StorageArea* DOMWindowStorage::GetOrCreateSessionStorage(
++StorageArea* DOMWindowStorage::GetOrCreateSessionStorage_ChromiumImpl(
+     ExceptionState& exception_state,
+     mojo::PendingRemote<mojom::blink::StorageArea> storage_area_for_init)
+     const {
+@@ -150,7 +152,7 @@ StorageArea* DOMWindowStorage::GetOrCreateSessionStorage(
+   return session_storage_.Get();
+ }
+ 
+-StorageArea* DOMWindowStorage::GetOrCreateLocalStorage(
++StorageArea* DOMWindowStorage::GetOrCreateLocalStorage_ChromiumImpl(
+     ExceptionState& exception_state,
+     mojo::PendingRemote<mojom::blink::StorageArea> storage_area_for_init)
+     const {
