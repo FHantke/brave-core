@@ -1,8 +1,26 @@
 diff --git a/services/network/cookie_manager.cc b/services/network/cookie_manager.cc
-index fb47ecfba4a4d631fc093e63e637cd9f596fc49d..78ce0cd4641e8df95cca9fecea910dae3ca5012c 100644
+index fb47ecfba4a4d631fc093e63e637cd9f596fc49d..3cc59140aba33f5498c296d2ea6fa36333f0392a 100644
 --- a/services/network/cookie_manager.cc
 +++ b/services/network/cookie_manager.cc
-@@ -414,6 +414,7 @@ CookieDeletionInfo DeletionFilterToInfo(mojom::CookieDeletionFilterPtr filter) {
+@@ -126,6 +126,7 @@ void CookieManager::GetCookieList(
+ 
+   cookie_store_->GetCookieListWithOptionsAsync(url, cookie_options,
+                                                cookie_partition_key_collection,
++                                               /*is_ad_tracker_tagged=*/false,
+                                                std::move(callback));
+ }
+ 
+@@ -158,7 +159,8 @@ void CookieManager::SetCanonicalCookie(const net::CanonicalCookie& cookie,
+   }
+   DCHECK(cookie_ptr->IsCanonical());
+   cookie_store_->SetCanonicalCookieAsync(std::move(cookie_ptr), source_url,
+-                                         cookie_options, std::move(callback));
++                                         cookie_options, /*is_ad_tracker_tagged=*/ false,
++                                          std::move(callback));
+ }
+ 
+ void CookieManager::DeleteCanonicalCookie(
+@@ -414,6 +416,7 @@ CookieDeletionInfo DeletionFilterToInfo(mojom::CookieDeletionFilterPtr filter) {
    delete_info.name = std::move(filter->cookie_name);
    delete_info.url = std::move(filter->url);
    delete_info.host = std::move(filter->host_name);

@@ -1,0 +1,20 @@
+diff --git a/net/cookies/cookie_monster.h b/net/cookies/cookie_monster.h
+index df271609ba4a253ab8225bf49e29877b9478010b..7c8645e4e2a50d7835652c7dbc23d2bc10b65ad3 100644
+--- a/net/cookies/cookie_monster.h
++++ b/net/cookies/cookie_monster.h
+@@ -210,6 +210,7 @@ class NET_EXPORT CookieMonster : public CookieStore {
+       std::unique_ptr<CanonicalCookie> cookie,
+       const GURL& source_url,
+       const CookieOptions& options,
++      bool is_ad_tracker_tagged,
+       SetCookiesCallback callback,
+       std::optional<CookieAccessResult> cookie_access_result =
+           std::nullopt) override;
+@@ -219,6 +220,7 @@ class NET_EXPORT CookieMonster : public CookieStore {
+   void GetCookieListWithOptionsAsync(const GURL& url,
+                                      const CookieOptions& options,
+                                      const CookiePartitionKeyCollection& s,
++                                     bool is_ad_tracker_tagged,
+                                      GetCookieListCallback callback) override;
+   void GetAllCookiesAsync(GetAllCookiesCallback callback) override;
+   void GetAllCookiesWithAccessSemanticsAsync(

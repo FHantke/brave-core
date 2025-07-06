@@ -1,0 +1,35 @@
+diff --git a/net/cookies/cookie_monster.cc b/net/cookies/cookie_monster.cc
+index b914ce39d47f8364d101473b6bc35f4cf3d0cb9e..27247235faf156a87e5509d7d442da03d9b82289 100644
+--- a/net/cookies/cookie_monster.cc
++++ b/net/cookies/cookie_monster.cc
+@@ -525,8 +525,13 @@ void CookieMonster::SetCanonicalCookieAsync(
+     std::unique_ptr<CanonicalCookie> cookie,
+     const GURL& source_url,
+     const CookieOptions& options,
++    bool is_ad_tracker_tagged,
+     SetCookiesCallback callback,
+     std::optional<CookieAccessResult> cookie_access_result) {
++
++  LOG(ERROR) << "[CookieMonster::SetCanonicalCookieAsync] "
++  << "in CHROMIUM";
++
+   DCHECK(cookie->IsCanonical());
+ 
+   std::string domain = cookie->Domain();
+@@ -561,6 +566,7 @@ void CookieMonster::GetCookieListWithOptionsAsync(
+     const GURL& url,
+     const CookieOptions& options,
+     const CookiePartitionKeyCollection& cookie_partition_key_collection,
++    bool is_ad_tracker_tagged,
+     GetCookieListCallback callback) {
+   DoCookieCallbackForURL(
+       base::BindOnce(
+@@ -1724,6 +1730,8 @@ void CookieMonster::SetCanonicalCookie(
+     const CookieOptions& options,
+     SetCookiesCallback callback,
+     std::optional<CookieAccessResult> cookie_access_result) {
++
++  LOG(ERROR) << "[CookieMonster::SetCanonicalCookie] CHROMIUM cookie: " << cc->Value();
+   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+   bool collect_metrics =
+       metrics_subsampler_.ShouldSample(kHistogramSampleProbability);

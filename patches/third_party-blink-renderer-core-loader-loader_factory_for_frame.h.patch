@@ -1,0 +1,31 @@
+diff --git a/third_party/blink/renderer/core/loader/loader_factory_for_frame.h b/third_party/blink/renderer/core/loader/loader_factory_for_frame.h
+index 78c2e581cba600e0a7e72cb3e324c20cb2272c93..4f56b7b299f2ffe608ec6887fb515ecccc803e2b 100644
+--- a/third_party/blink/renderer/core/loader/loader_factory_for_frame.h
++++ b/third_party/blink/renderer/core/loader/loader_factory_for_frame.h
+@@ -35,6 +35,9 @@ class CORE_EXPORT LoaderFactoryForFrame final
+ 
+   void Trace(Visitor*) const override;
+ 
++  bool IsInAdContext() const {
++    return true;
++  }
+   // LoaderFactory implementations
+   std::unique_ptr<URLLoader> CreateURLLoader(
+       const network::ResourceRequest&,
+@@ -45,6 +48,16 @@ class CORE_EXPORT LoaderFactoryForFrame final
+       const std::optional<base::UnguessableToken>&
+           service_worker_race_network_request_token,
+       bool is_from_origin_dirty_style_sheet) override;
++
++  std::unique_ptr<URLLoader> CreateURLLoader_Orig(
++      const network::ResourceRequest&,
++      const ResourceLoaderOptions&,
++      scoped_refptr<base::SingleThreadTaskRunner>,
++      scoped_refptr<base::SingleThreadTaskRunner>,
++      BackForwardCacheLoaderHelper*,
++      const std::optional<base::UnguessableToken>&
++          service_worker_race_network_request_token,
++      bool is_from_origin_dirty_style_sheet);
+   CodeCacheHost* GetCodeCacheHost() override;
+ 
+  private:

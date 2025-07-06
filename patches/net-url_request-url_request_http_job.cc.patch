@@ -1,0 +1,27 @@
+diff --git a/net/url_request/url_request_http_job.cc b/net/url_request/url_request_http_job.cc
+index be808418a4b3a764e38ccbce5c3247c53679c31b..d2821070dcf02e6eb980a389ff2da68829b88d66 100644
+--- a/net/url_request/url_request_http_job.cc
++++ b/net/url_request/url_request_http_job.cc
+@@ -810,9 +810,13 @@ void URLRequestHttpJob::AddCookieHeaderAndStart() {
+ 
+   CookieOptions options = CreateCookieOptions(same_site_context);
+ 
++  LOG(ERROR) << "[URLRequestHttpJob::AddCookieHeaderAndStart] Requesting cookies for URL: "
++            << request_->url().spec();
++
+   cookie_store->GetCookieListWithOptionsAsync(
+       request_->url(), options,
+       CookiePartitionKeyCollection(request_->cookie_partition_key()),
++      /*TODO is_ad_tracker_tagged=*/request_->is_ad_tracker_tagged(),
+       base::BindOnce(&URLRequestHttpJob::SetCookieHeaderAndStart,
+                      weak_factory_.GetWeakPtr(), options));
+ }
+@@ -1125,7 +1129,7 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
+     }
+     CookieAccessResult cookie_access_result(returned_status);
+     cookie_store->SetCanonicalCookieAsync(
+-        std::move(cookie), request_->url(), options,
++        std::move(cookie), request_->url(), options, /*TODO is_ad_tracker_tagged=*/ false,
+         base::BindOnce(&URLRequestHttpJob::OnSetCookieResult,
+                        weak_factory_.GetWeakPtr(), options, cookie_to_return,
+                        std::move(cookie_string)),

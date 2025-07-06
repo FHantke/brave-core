@@ -1,0 +1,12 @@
+diff --git a/content/browser/web_package/signed_exchange_handler.cc b/content/browser/web_package/signed_exchange_handler.cc
+index de2948e4aab190a163c5bfdf91743d5cb172beb0..4b5ee680d70e3414e9624883ba034cad2ee3f46b 100644
+--- a/content/browser/web_package/signed_exchange_handler.cc
++++ b/content/browser/web_package/signed_exchange_handler.cc
+@@ -742,6 +742,7 @@ void SignedExchangeHandler::CheckAbsenceOfCookies(base::OnceClosure callback) {
+       /*is_ad_tagged=*/false,
+       /*apply_devtools_overrides=*/false,
+       /*force_disable_third_party_cookies=*/false,
++      /*is_ad_tracker_taggged=*/false,
+       base::BindOnce(&SignedExchangeHandler::OnGetCookies,
+                      weak_factory_.GetWeakPtr(), std::move(callback)));
+ }

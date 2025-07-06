@@ -1,0 +1,36 @@
+diff --git a/services/network/restricted_cookie_manager.h b/services/network/restricted_cookie_manager.h
+index 1d5c60ed5eed34f430377a51951f426405c60c25..006ff1cc9d8c049cde6a98f829f24a46f21c59fb 100644
+--- a/services/network/restricted_cookie_manager.h
++++ b/services/network/restricted_cookie_manager.h
+@@ -131,6 +131,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
+                     bool is_ad_tagged,
+                     bool apply_devtools_overrides,
+                     bool force_disable_third_party_cookies,
++                    bool is_ad_tracker_tagged,
+                     GetAllForUrlCallback callback) override;
+ 
+   void SetCanonicalCookie(const net::CanonicalCookie& cookie,
+@@ -141,6 +142,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
+                           net::CookieInclusionStatus status,
+                           bool is_ad_tagged,
+                           bool apply_devtools_overrides,
++                          bool is_ad_tracker_tagged,
+                           SetCanonicalCookieCallback callback) override;
+ 
+   void AddChangeListener(
+@@ -160,6 +162,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
+       bool is_ad_tagged,
+       bool apply_devtools_overrides,
+       const std::string& cookie,
++      bool is_ad_tracker_tagged,
+       SetCookieFromStringCallback callback) override;
+ 
+   void GetCookiesString(const GURL& url,
+@@ -170,6 +173,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
+                         bool is_ad_tagged,
+                         bool apply_devtools_overrides,
+                         bool force_disable_third_party_cookies,
++                        bool is_ad_tracker_tagged,
+                         GetCookiesStringCallback callback) override;
+   void CookiesEnabledFor(const GURL& url,
+                          const net::SiteForCookies& site_for_cookies,

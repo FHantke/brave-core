@@ -1,0 +1,66 @@
+diff --git a/third_party/blink/renderer/core/loader/loader_factory_for_frame.cc b/third_party/blink/renderer/core/loader/loader_factory_for_frame.cc
+index 737ecc2a477783a958bd0add68d51d58c83ef0d9..3e503d9ff2c00c9295db0dc11f40ac5ce45941bb 100644
+--- a/third_party/blink/renderer/core/loader/loader_factory_for_frame.cc
++++ b/third_party/blink/renderer/core/loader/loader_factory_for_frame.cc
+@@ -35,6 +35,9 @@
+ #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+ #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+ 
++#include "third_party/blink/renderer/core/frame/ad_tracker.h"
++
++
+ namespace blink {
+ 
+ namespace {
+@@ -136,7 +139,43 @@ void LoaderFactoryForFrame::Trace(Visitor* visitor) const {
+   LoaderFactory::Trace(visitor);
+ }
+ 
++
+ std::unique_ptr<URLLoader> LoaderFactoryForFrame::CreateURLLoader(
++  const network::ResourceRequest& network_request,
++  const ResourceLoaderOptions& options,
++  scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
++  scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
++  BackForwardCacheLoaderHelper* back_forward_cache_loader_helper,
++  const std::optional<base::UnguessableToken>&
++      service_worker_race_network_request_token,
++  bool is_from_origin_dirty_style_sheet) {
++    ExecutionContext* execution_context = window_->document()->GetExecutionContext();
++    AdTracker* tracker = AdTracker::FromExecutionContext(execution_context);  
++    const bool is_ad = tracker && tracker->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop);
++
++    LOG(ERROR) << "[LoaderFactoryForFrame::CreateURLLoader] "
++              << "Creating URLLoader for " << network_request.url
++              << " from ad? " << (is_ad ? "YES" : "NO");
++    
++    network::ResourceRequest network_request_tmp = network_request;
++
++    if (is_ad) {
++      // Example: Modify the URL or headers for ad-related requests
++      // This is just a placeholder; actual logic will depend on your requirements.    
++      network_request_tmp.headers.SetHeader("sec-X-AdTracker-2", "loader_factory");
++    }
++        
++    network_request_tmp.headers.SetHeader("AAAAAA", "BBBB");
++
++    return CreateURLLoader_Orig(
++      network_request_tmp, options, freezable_task_runner,
++        unfreezable_task_runner, back_forward_cache_loader_helper,
++        service_worker_race_network_request_token, 
++        is_from_origin_dirty_style_sheet);
++  }
++
++
++std::unique_ptr<URLLoader> LoaderFactoryForFrame::CreateURLLoader_Orig(
+     const network::ResourceRequest& network_request,
+     const ResourceLoaderOptions& options,
+     scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
+@@ -146,6 +185,7 @@ std::unique_ptr<URLLoader> LoaderFactoryForFrame::CreateURLLoader(
+         service_worker_race_network_request_token,
+     bool is_from_origin_dirty_style_sheet) {
+   LocalFrame* frame = window_->GetFrame();
++
+   CHECK(frame);
+   if (std::unique_ptr<URLLoader> loader = frame->CreateURLLoaderForTesting()) {
+     return loader;

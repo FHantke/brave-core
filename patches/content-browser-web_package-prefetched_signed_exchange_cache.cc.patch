@@ -1,0 +1,12 @@
+diff --git a/content/browser/web_package/prefetched_signed_exchange_cache.cc b/content/browser/web_package/prefetched_signed_exchange_cache.cc
+index c61082b57d245a71314d229f95e3147b8cc824d1..a9ccc49fd6d5eab859c24eff32884eaa7f0d5be1 100644
+--- a/content/browser/web_package/prefetched_signed_exchange_cache.cc
++++ b/content/browser/web_package/prefetched_signed_exchange_cache.cc
+@@ -193,6 +193,7 @@ class PrefetchedNavigationLoaderInterceptor
+         request.is_ad_tagged,
+         /*apply_devtools_overrides=*/false,
+         /*force_disable_third_party_cookies=*/false,
++        /*TODO is_ad_tracker_tagged=*/false,
+         base::BindOnce(&PrefetchedNavigationLoaderInterceptor::OnGetCookies,
+                        weak_factory_.GetWeakPtr(), std::move(callback)));
+   }

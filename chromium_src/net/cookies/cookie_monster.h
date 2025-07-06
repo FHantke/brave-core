@@ -46,6 +46,7 @@ class NET_EXPORT CookieMonster : public ChromiumCookieMonster {
       std::unique_ptr<CanonicalCookie> cookie,
       const GURL& source_url,
       const CookieOptions& options,
+      bool is_ad_tracker_tagged,
       SetCookiesCallback callback,
       std::optional<CookieAccessResult> cookie_access_result =
           std::nullopt) override;
@@ -53,6 +54,7 @@ class NET_EXPORT CookieMonster : public ChromiumCookieMonster {
       const GURL& url,
       const CookieOptions& options,
       const CookiePartitionKeyCollection& cookie_partition_key_collection,
+      bool is_ad_tracker_tagged,
       GetCookieListCallback callback) override;
 
  private:

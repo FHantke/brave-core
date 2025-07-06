@@ -1,0 +1,40 @@
+diff --git a/services/network/url_loader.cc b/services/network/url_loader.cc
+index 937a7b2ba05c11514d2d980a6fb2eaa9102c2774..62afd3fea26e32398225cafd22100e298cfe938f 100644
+--- a/services/network/url_loader.cc
++++ b/services/network/url_loader.cc
+@@ -445,6 +445,11 @@ URLLoader::URLLoader(
+       permissions_policy_(request.permissions_policy) {
+   DCHECK(delete_callback_);
+ 
++  bool ad_tracker_tagged = false;
++  if (request.headers.HasHeader("sec-X-AdTracker")) {
++    ad_tracker_tagged = true;
++  }
++
+   // crbug.com/387537990: Experiment with creating the mojo data pipe
+   // asynchronously to evaluate the impact of removing a small amount of work
+   // per-resource from the main network service sequence. This isn't meant to
+@@ -501,6 +506,9 @@ URLLoader::URLLoader(
+   // Set up UserData (pointing to `this`) first.
+   url_request_->SetUserData(kUserDataKey,
+                             std::make_unique<UnownedPointer>(this));
++  
++  url_request_->set_is_ad_tracker_tagged(ad_tracker_tagged);
++
+   // Configure the main request parameters. This must happen after setting
+   // UserData, as `ConfigureUrlRequest` might internally retrieve data (e.g.,
+   // PermissionsPolicy) via the `url_request_`'s UserData pointer.
+@@ -2161,6 +2169,13 @@ void URLLoader::SetRawRequestHeadersAndNotify(
+           network::mojom::HttpRawHeaderPair::New();
+       pair->key = header.first;
+       pair->value = header.second;
++
++      if (header.first == "sec-X-AdTracker") {
++          LOG(ERROR) << "sec-X-AdTracker header found in raw request headers: "
++                     << header.second;
++          continue; 
++      }
++
+       header_array.push_back(std::move(pair));
+     }
+     DispatchOnRawRequest(std::move(header_array));

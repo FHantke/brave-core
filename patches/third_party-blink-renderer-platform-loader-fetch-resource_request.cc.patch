@@ -1,0 +1,16 @@
+diff --git a/third_party/blink/renderer/platform/loader/fetch/resource_request.cc b/third_party/blink/renderer/platform/loader/fetch/resource_request.cc
+index 8b005bd2be3b7c8a3d13a463033d8227b8b4da16..0a2f4e87779e4b929b3193366b566063677e83bc 100644
+--- a/third_party/blink/renderer/platform/loader/fetch/resource_request.cc
++++ b/third_party/blink/renderer/platform/loader/fetch/resource_request.cc
+@@ -246,6 +246,11 @@ std::unique_ptr<ResourceRequest> ResourceRequestHead::CreateRedirectRequest(
+       GetAttributionReportingEligibility());
+   request->SetAttributionReportingSrcToken(GetAttributionSrcToken());
+ 
++  /*
++  request->AddHttpHeaderField(AtomicString("sec-X-AdTracker"),
++              AtomicString("resource_request"));
++  */
++
+   return request;
+ }
+ 

@@ -1,0 +1,81 @@
+diff --git a/services/network/restricted_cookie_manager.cc b/services/network/restricted_cookie_manager.cc
+index 3559361072183c2b0a7b3a489a964f343df72edf..c4d912298a12539c85629fa292c1e23533cba294 100644
+--- a/services/network/restricted_cookie_manager.cc
++++ b/services/network/restricted_cookie_manager.cc
+@@ -540,6 +540,7 @@ void RestrictedCookieManager::GetAllForUrl(
+     bool is_ad_tagged,
+     bool apply_devtools_overrides,
+     bool force_disable_third_party_cookies,
++    bool is_ad_tracker_tagged,
+     GetAllForUrlCallback callback) {
+   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+ 
+@@ -557,7 +558,8 @@ void RestrictedCookieManager::GetAllForUrl(
+   net_options.set_return_excluded_cookies();
+ 
+   cookie_store_->GetCookieListWithOptionsAsync(
+-      url, net_options, cookie_partition_key_collection_,
++      url, net_options, cookie_partition_key_collection_, 
++      is_ad_tracker_tagged,
+       base::BindOnce(
+           &RestrictedCookieManager::CookieListToGetAllForUrlCallback,
+           weak_ptr_factory_.GetWeakPtr(), url, site_for_cookies,
+@@ -730,6 +732,7 @@ void RestrictedCookieManager::SetCanonicalCookie(
+     net::CookieInclusionStatus status,
+     bool is_ad_tagged,
+     bool apply_devtools_overrides,
++    bool is_ad_tracker_tagged,
+     SetCanonicalCookieCallback callback) {
+   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+   bool collect_metrics =
+@@ -878,7 +881,7 @@ void RestrictedCookieManager::SetCanonicalCookie(
+ 
+   net::CookieAccessResult cookie_access_result(status);
+   cookie_store_->SetCanonicalCookieAsync(
+-      std::move(sanitized_cookie), origin_url, options,
++      std::move(sanitized_cookie), origin_url, options, is_ad_tracker_tagged,
+       base::BindOnce(&RestrictedCookieManager::SetCanonicalCookieResult,
+                      weak_ptr_factory_.GetWeakPtr(), url,
+                      isolated_top_frame_origin, cookie_setting_overrides,
+@@ -962,6 +965,7 @@ void RestrictedCookieManager::SetCookieFromString(
+     bool is_ad_tagged,
+     bool apply_devtools_overrides,
+     const std::string& cookie,
++    bool is_ad_tracker_tagged,
+     SetCookieFromStringCallback callback) {
+   TRACE_EVENT("net", "RestrictedCookieManager::SetCookieFromString");
+   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+@@ -1030,7 +1034,7 @@ void RestrictedCookieManager::SetCookieFromString(
+   // SetCanonicalCookie()
+   SetCanonicalCookie(*parsed_cookie, url, site_for_cookies, top_frame_origin,
+                      storage_access_api_status, status, is_ad_tagged,
+-                     apply_devtools_overrides, std::move(on_set));
++                     apply_devtools_overrides, is_ad_tracker_tagged, std::move(on_set));
+ 
+   if (metrics_subsampler_.ShouldSample(net::kHistogramSampleProbability)) {
+     base::UmaHistogramCustomMicrosecondsTimes(
+@@ -1048,6 +1052,7 @@ void RestrictedCookieManager::GetCookiesString(
+     bool is_ad_tagged,
+     bool apply_devtools_overrides,
+     bool force_disable_third_party_cookies,
++    bool is_ad_tracker_tagged,
+     GetCookiesStringCallback callback) {
+   TRACE_EVENT("net", "RestrictedCookieManager::GetCookiesString");
+   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+@@ -1082,6 +1087,7 @@ void RestrictedCookieManager::GetCookiesString(
+                storage_access_api_status, std::move(match_options),
+                is_ad_tagged, apply_devtools_overrides,
+                force_disable_third_party_cookies,
++               is_ad_tracker_tagged,
+                base::BindOnce([](const std::vector<net::CookieWithAccessResult>&
+                                      cookies) {
+                  return net::CanonicalCookie::BuildCookieLine(cookies);
+@@ -1232,7 +1238,7 @@ void RestrictedCookieManager::GetCookiesAfterSet(
+   // The caller will be unblocked by GetAllForUrl.
+   GetAllForUrl(url, site_for_cookies, top_frame_origin,
+                storage_access_api_status, std::move(match_options),
+-               is_ad_tagged, apply_devtools_overrides,
++               is_ad_tagged, /*TODO is_ad_tracker_tagged*/ false, apply_devtools_overrides,
+                /*force_disable_third_party_cookies=*/false,
+                base::BindOnce([](const std::vector<net::CookieWithAccessResult>&
+                                      cookies) {

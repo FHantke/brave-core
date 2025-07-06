@@ -1,0 +1,41 @@
+diff --git a/third_party/blink/renderer/modules/cookie_store/cookie_store.cc b/third_party/blink/renderer/modules/cookie_store/cookie_store.cc
+index 3c0bca49cbc7cb72f1beda8f2d07014c80067b73..2e1b8b11383f4c4f25934694835cee7f80f9a2e3 100644
+--- a/third_party/blink/renderer/modules/cookie_store/cookie_store.cc
++++ b/third_party/blink/renderer/modules/cookie_store/cookie_store.cc
+@@ -473,6 +473,10 @@ void CookieStore::DoRead(ScriptState* script_state,
+     return;
+   }
+ 
++
++  AdTracker* tracker = AdTracker::FromExecutionContext(context);
++  const bool is_ad = tracker && tracker->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop);
++
+   bool is_ad_tagged = IsAdTagged(context);
+   bool should_apply_devtools_overrides = false;
+   probe::ShouldApplyDevtoolsCookieSettingOverrides(
+@@ -483,6 +487,7 @@ void CookieStore::DoRead(ScriptState* script_state,
+       context->GetStorageAccessApiStatus(), std::move(backend_options),
+       is_ad_tagged, should_apply_devtools_overrides,
+       /*force_disable_third_party_cookies=*/false,
++      /*TODO is_ad_tracker_tagged*/ is_ad,
+       std::move(backend_result_converter));
+ }
+ 
+@@ -565,6 +570,9 @@ ScriptPromise<IDLUndefined> CookieStore::DoWrite(
+   probe::ShouldApplyDevtoolsCookieSettingOverrides(
+       GetExecutionContext(), &should_apply_devtools_overrides);
+ 
++  AdTracker* tracker = AdTracker::FromExecutionContext(context);
++  const bool is_ad = tracker && tracker->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop);
++
+   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+       script_state, exception_state.GetContext());
+   backend_->SetCanonicalCookie(
+@@ -572,6 +580,7 @@ ScriptPromise<IDLUndefined> CookieStore::DoWrite(
+       default_site_for_cookies_, default_top_frame_origin_,
+       context->GetStorageAccessApiStatus(), status, is_ad_tagged,
+       should_apply_devtools_overrides,
++      /*is_ad_tracker_tagged=*/is_ad,
+       WTF::BindOnce(&CookieStore::OnSetCanonicalCookieResult,
+                     WrapPersistent(resolver)));
+   return resolver->Promise();

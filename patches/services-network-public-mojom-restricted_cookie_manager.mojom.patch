@@ -1,0 +1,44 @@
+diff --git a/services/network/public/mojom/restricted_cookie_manager.mojom b/services/network/public/mojom/restricted_cookie_manager.mojom
+index 497453f59beb0d5baccb0acfa3bf9f9d941d0536..61b9822fe7163efb6c03bb8ca02941ab201c63cd 100644
+--- a/services/network/public/mojom/restricted_cookie_manager.mojom
++++ b/services/network/public/mojom/restricted_cookie_manager.mojom
+@@ -98,7 +98,8 @@ interface RestrictedCookieManager {
+       // be configured _per_ aw contents and the standard way of
+       // configuring this per cookie settings (from each browser
+       // context), is not sufficient.
+-      bool force_disable_third_party_cookies) => (
++      bool force_disable_third_party_cookies,
++      bool is_ad_tracker_tagged) => (
+       array<CookieWithAccessResult> cookies);
+ 
+   // Sets a canonical cookie. |status| must be an inclusion status as defined
+@@ -111,7 +112,8 @@ interface RestrictedCookieManager {
+                      StorageAccessApiStatus storage_access_api_status,
+                      CookieInclusionStatus status,
+                      bool is_ad_tagged,
+-                     bool apply_devtools_overrides) => (bool success);
++                     bool apply_devtools_overrides,
++                     bool is_ad_tracker_tagged) => (bool success);
+ 
+   // Subscribes to changes in the cookies transmitted in a request to an URL.
+   //
+@@ -147,7 +149,8 @@ interface RestrictedCookieManager {
+       bool get_version_shared_memory,
+       bool is_ad_tagged,
+       bool apply_devtools_overrides,
+-      string cookie)
++      string cookie,
++      bool is_ad_tracker_tagged)
+       => (CookiesResponse? response);
+ 
+   // Used to get cookies for the given URL. Cookies that are blocked by user
+@@ -184,7 +187,8 @@ interface RestrictedCookieManager {
+                    // can be configured _per_ aw contents and the standard way
+                    // of configuring this per cookie settings (from each
+                    // browser context), is not sufficient.
+-                   bool force_disable_third_party_cookies) => (
++                   bool force_disable_third_party_cookies,
++                   bool is_ad_tracker_tagged) => (
+                    uint64 version,
+                    mojo_base.mojom.ReadOnlySharedMemoryRegion? version_buffer,
+                    string cookies);

@@ -1,0 +1,28 @@
+diff --git a/third_party/blink/renderer/core/fetch/fetch_manager.cc b/third_party/blink/renderer/core/fetch/fetch_manager.cc
+index 9ab9723c6cb39b4f77e727ad3bc26ac62d1d1e6e..a6c2a41da20da465797258537737278a2ca1874c 100644
+--- a/third_party/blink/renderer/core/fetch/fetch_manager.cc
++++ b/third_party/blink/renderer/core/fetch/fetch_manager.cc
+@@ -56,6 +56,7 @@
+ #include "third_party/blink/renderer/core/fetch/response.h"
+ #include "third_party/blink/renderer/core/fetch/trust_token_to_mojom.h"
+ #include "third_party/blink/renderer/core/fileapi/blob.h"
++#include "third_party/blink/renderer/core/frame/ad_tracker.h"
+ #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
+ #include "third_party/blink/renderer/core/frame/frame.h"
+ #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+@@ -1114,6 +1115,15 @@ void FetchLoaderBase::PerformHTTPFetch(ExceptionState& exception_state) {
+                                AtomicString(header.second));
+   }
+ 
++  ExecutionContext* execution_context = GetExecutionContext();
++  AdTracker* tracker = AdTracker::FromExecutionContext(execution_context);  
++  const bool is_ad = tracker && tracker->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop);
++
++  if (is_ad) {    
++    request.AddHttpHeaderField(AtomicString("sec-X-AdTracker"),
++    AtomicString("true"));
++  }
++
+   if (fetch_request_data_->Method() != http_names::kGET &&
+       fetch_request_data_->Method() != http_names::kHEAD) {
+     if (fetch_request_data_->Buffer()) {

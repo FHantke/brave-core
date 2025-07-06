@@ -1,0 +1,54 @@
+diff --git a/third_party/blink/renderer/core/loader/cookie_jar.cc b/third_party/blink/renderer/core/loader/cookie_jar.cc
+index 37e6898c5fd06a896a1b587f310fd0185f4fbf4a..5b280a7a2d2cd8aed8b294d111fad0e9b289acb4 100644
+--- a/third_party/blink/renderer/core/loader/cookie_jar.cc
++++ b/third_party/blink/renderer/core/loader/cookie_jar.cc
+@@ -77,13 +77,18 @@ void CookieJar::SetCookie(const String& value) {
+   const bool get_version_shared_memory =
+       !shared_memory_version_client_.has_value();
+   const bool apply_devtools_overrides = ShouldApplyDevtoolsOverrides();
++  
++  ExecutionContext* context =document_->GetExecutionContext();
++  AdTracker* tracker = AdTracker::FromExecutionContext(context);
++  const bool is_ad = tracker && tracker->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop);
++  
+   if (RuntimeEnabledFeatures::AsyncSetCookieEnabled()) {
+     required_committed_writes_++;
+     backend_->SetCookieFromString(
+         cookie_url, document_->SiteForCookies(), document_->TopFrameOrigin(),
+         document_->GetExecutionContext()->GetStorageAccessApiStatus(),
+         get_version_shared_memory, is_ad_tagged, apply_devtools_overrides,
+-        value,
++        value, is_ad,
+         WTF::BindOnce(&CookieJar::OnSetCookieResponse, WrapWeakPersistent(this),
+                       cookie_url, apply_devtools_overrides));
+   } else {
+@@ -92,7 +97,7 @@ void CookieJar::SetCookie(const String& value) {
+             document_->TopFrameOrigin(),
+             document_->GetExecutionContext()->GetStorageAccessApiStatus(),
+             get_version_shared_memory, is_ad_tagged, apply_devtools_overrides,
+-            value, &response)) {
++            value, is_ad, &response)) {
+       // On IPC failure invalidate cached values and return empty string since
+       // there is no guarantee the client can still validly access cookies in
+       // the current context. See crbug.com/1468909.
+@@ -166,13 +171,19 @@ String CookieJar::Cookies() {
+     bool is_ad_tagged =
+         document_->GetFrame() && document_->GetFrame()->IsAdFrame();
+ 
++    
++    ExecutionContext* context =document_->GetExecutionContext();
++    AdTracker* tracker = AdTracker::FromExecutionContext(context);
++    const bool is_ad = tracker && tracker->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop);
++    
+     if (!backend_->GetCookiesString(
+             cookie_url, document_->SiteForCookies(),
+             document_->TopFrameOrigin(),
+             document_->GetExecutionContext()->GetStorageAccessApiStatus(),
+             get_version_shared_memory, is_ad_tagged,
+             should_apply_devtools_overrides,
+-            /*force_disable_third_party_cookies=*/false, &new_version,
++            /*force_disable_third_party_cookies=*/false, 
++            /* bool is_ad_tracker_tagged */ is_ad, &new_version,
+             &new_mapped_region, &value)) {
+       // On IPC failure invalidate cached values and return empty string since
+       // there is no guarantee the client can still validly access cookies in
