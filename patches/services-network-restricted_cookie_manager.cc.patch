@@ -1,5 +1,5 @@
 diff --git a/services/network/restricted_cookie_manager.cc b/services/network/restricted_cookie_manager.cc
-index 3559361072183c2b0a7b3a489a964f343df72edf..c4d912298a12539c85629fa292c1e23533cba294 100644
+index 6096cd521541ac33bf240c1d048645cc50936bb8..a855eb3ec307432f0457391b296ada296d1f0ba9 100644
 --- a/services/network/restricted_cookie_manager.cc
 +++ b/services/network/restricted_cookie_manager.cc
 @@ -540,6 +540,7 @@ void RestrictedCookieManager::GetAllForUrl(
@@ -70,7 +70,7 @@ index 3559361072183c2b0a7b3a489a964f343df72edf..c4d912298a12539c85629fa292c1e235
                 base::BindOnce([](const std::vector<net::CookieWithAccessResult>&
                                       cookies) {
                   return net::CanonicalCookie::BuildCookieLine(cookies);
-@@ -1232,7 +1238,7 @@ void RestrictedCookieManager::GetCookiesAfterSet(
+@@ -1233,7 +1239,7 @@ void RestrictedCookieManager::GetCookiesAfterSet(
    // The caller will be unblocked by GetAllForUrl.
    GetAllForUrl(url, site_for_cookies, top_frame_origin,
                 storage_access_api_status, std::move(match_options),
