@@ -1,14 +1,8 @@
 diff --git a/third_party/blink/renderer/platform/runtime_enabled_features.json5 b/third_party/blink/renderer/platform/runtime_enabled_features.json5
-<<<<<<< HEAD
-index 93c9798d3de30df26314deb87d1ccd0fac7f2336..1e0fe712012dd6ae457bf7f4551ddbdd124c10d5 100644
+index 93c9798d3de30df26314deb87d1ccd0fac7f2336..d6c74fd4fa23cb920bc82cfd4ae4811e93e0b663 100644
 --- a/third_party/blink/renderer/platform/runtime_enabled_features.json5
 +++ b/third_party/blink/renderer/platform/runtime_enabled_features.json5
-@@ -2193,6 +2193,7 @@
-=======
-index 773ed8ed9a43678d28dc7f5d86479d0f7c010a8f..c40a6549bd74c7837f8eb16fa74bfbde2b5790e7 100644
---- a/third_party/blink/renderer/platform/runtime_enabled_features.json5
-+++ b/third_party/blink/renderer/platform/runtime_enabled_features.json5
-@@ -312,8 +312,7 @@
+@@ -311,8 +311,7 @@
      {
        name: "AdTagging",
        public: true,
@@ -18,8 +12,7 @@ index 773ed8ed9a43678d28dc7f5d86479d0f7c010a8f..c40a6549bd74c7837f8eb16fa74bfbde
      },
      {
        name: "AIPageContentPaidContentAnnotation",
-@@ -2120,6 +2119,7 @@
->>>>>>> 72a372f7ee3 (add additional patches)
+@@ -2193,6 +2192,7 @@
        // In-development features for the File System Access API.
        name: "FileSystemAccessAPIExperimental",
        status: "experimental",
@@ -27,11 +20,7 @@ index 773ed8ed9a43678d28dc7f5d86479d0f7c010a8f..c40a6549bd74c7837f8eb16fa74bfbde
      },
      {
        // The FileSystemHandle.getCloudIdentifiers() method (see
-<<<<<<< HEAD
-@@ -2207,6 +2208,7 @@
-=======
-@@ -2134,6 +2134,7 @@
->>>>>>> 72a372f7ee3 (add additional patches)
+@@ -2207,6 +2207,7 @@
        // Non-OPFS File System Access API.
        name: "FileSystemAccessLocal",
        status: {"default": "stable"},
@@ -39,11 +28,7 @@ index 773ed8ed9a43678d28dc7f5d86479d0f7c010a8f..c40a6549bd74c7837f8eb16fa74bfbde
      },
      {
        name: "FileSystemAccessLockingScheme",
-<<<<<<< HEAD
-@@ -3134,6 +3136,7 @@
-=======
-@@ -2979,6 +2980,7 @@
->>>>>>> 72a372f7ee3 (add additional patches)
+@@ -3134,6 +3135,7 @@
      {
        name: "MiddleClickAutoscroll",
        status: "test",
