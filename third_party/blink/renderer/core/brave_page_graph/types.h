@@ -111,6 +111,7 @@ enum GraphMLAttrDef {
   kGraphMLAttrDefIsDeleted,
   kGraphMLAttrDefIsFrameAttached,
   kGraphMLAttrDefIsStyle,
+  kGraphMLAttrDefIsAd,
   kGraphMLAttrDefKey,
   kGraphMLAttrDefMethodName,
   kGraphMLAttrDefNodeId,

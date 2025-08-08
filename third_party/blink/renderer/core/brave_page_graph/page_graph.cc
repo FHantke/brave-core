@@ -140,6 +140,8 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "v8/include/v8.h"
 
+#include "third_party/blink/renderer/core/frame/ad_tracker.h"
+
 using brave_page_graph::DocumentRequest;
 using brave_page_graph::EdgeAttributeDelete;
 using brave_page_graph::EdgeAttributeSet;
@@ -265,6 +267,8 @@ class V8PageGraphDelegate : public v8::page_graph::PageGraphDelegate {
     blink::ExecutionContext* receiver_execution_context =
         blink::ToExecutionContext(receiver_context);
     v8::Isolate* isolate = receiver_context->GetIsolate();
+
+    LOG(ERROR) << "AAA";
 
     if (auto* page_graph = GetPageGraphFromIsolate(isolate)) {
       blink::PageGraphValues arguments;
@@ -759,6 +763,10 @@ void PageGraph::RegisterPageGraphScriptCompilation(
     const blink::ReferrerScriptInfo& referrer_info,
     const blink::ClassicScript& classic_script,
     v8::Local<v8::Script> script) {
+
+  v8::Isolate* isolate = execution_context->GetIsolate();
+  v8::HandleScope handle_scope(isolate); 
+
   const ScriptId script_id = script->GetUnboundScript()->GetId();
   blink::KURL script_url = classic_script.BaseUrl();
   if (script_url.IsEmpty() || script_url.ProtocolIsAbout()) {
@@ -1308,6 +1316,9 @@ void PageGraph::RegisterDocumentNodeCreated(blink::Document* document) {
           << ", frame id: " << frame_id;
 
   v8::Isolate* const isolate = execution_context->GetIsolate();
+
+  LOG(ERROR) << "BBB";
+
   if (isolate) {
     static base::NoDestructor<V8PageGraphDelegate> page_graph_delegate;
     v8::page_graph::SetPageGraphDelegate(isolate, page_graph_delegate.get());
@@ -1633,9 +1644,13 @@ void PageGraph::RegisterRequestStartFromScript(
     const InspectorId request_id,
     const blink::KURL& url,
     const String& resource_type) {
+
+  AdTracker* tracker = AdTracker::FromExecutionContext(execution_context);  
+  const bool is_ad = tracker && tracker->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop);
+
   VLOG(1) << "RegisterRequestStartFromScript) script id: " << script_id
           << " request id: " << request_id << ", url: " << url
-          << ", type: " << resource_type;
+          << ", type: " << resource_type << ", is_ad: " << is_ad;
   NodeActor* const acting_node =
       script_tracker_.GetScriptNode(execution_context->GetIsolate(), script_id);
   FrameId frame_id = GetFrameId(execution_context);
@@ -1960,9 +1975,14 @@ void PageGraph::RegisterWebAPICall(blink::ExecutionContext* execution_context,
                                    const MethodName& method,
                                    const blink::PageGraphValues& arguments) {
   FrameId frame_id = GetFrameId(execution_context);
+
+  AdTracker* tracker = AdTracker::FromExecutionContext(execution_context);  
+  const bool is_ad = tracker && tracker->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop);
+
   if (VLOG_IS_ON(2)) {
     VLOG(2) << "RegisterWebAPICall) method: " << method
-            << ", frame id: " << frame_id << ", arguments: " << arguments;
+            << ", frame id: " << frame_id << ", is_ad: " << is_ad
+            << ", arguments: " << arguments;
   }
 
   ScriptPosition script_position;
@@ -1976,13 +1996,17 @@ void PageGraph::RegisterWebAPICall(blink::ExecutionContext* execution_context,
   NodeJSWebAPI* js_webapi_node = GetJSWebAPINode(method);
   AddEdge<EdgeJSCall>(static_cast<NodeScriptLocal*>(acting_node),
                       js_webapi_node, frame_id, std::move(arguments),
-                      script_position);
+                      script_position, is_ad);
 }
 
 void PageGraph::RegisterWebAPIResult(blink::ExecutionContext* execution_context,
                                      const MethodName& method,
                                      const blink::PageGraphValue& result) {
-  VLOG(2) << "RegisterWebAPIResult) method: " << method
+
+  AdTracker* tracker = AdTracker::FromExecutionContext(execution_context);  
+  const bool is_ad = tracker && tracker->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop);
+
+  VLOG(2) << "RegisterWebAPIResult) method: " << method << ", is_ad: " << is_ad
           << ", result: " << result;
 
   NodeActor* const caller_node = GetCurrentActingNode(execution_context);
@@ -1996,16 +2020,22 @@ void PageGraph::RegisterWebAPIResult(blink::ExecutionContext* execution_context,
   FrameId frame_id = GetFrameId(execution_context);
   AddEdge<EdgeJSResult>(js_webapi_node,
                         static_cast<NodeScriptLocal*>(caller_node), frame_id,
-                        result);
+                        result, is_ad);
 }
 
 void PageGraph::RegisterJSBuiltInCall(blink::ExecutionContext* receiver_context,
                                       const char* builtin_name,
                                       const blink::PageGraphValues& arguments) {
   FrameId frame_id = GetFrameId(receiver_context);
+
+  // TODO: why receiver context?
+  AdTracker* tracker = AdTracker::FromExecutionContext(receiver_context);  
+  const bool is_ad = tracker && tracker->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop);
+
   if (VLOG_IS_ON(2)) {
     VLOG(2) << "RegisterJSBuiltInCall) built in: " << builtin_name
-            << ", frame id: " << frame_id << ", arguments: " << arguments;
+            << ", frame id: " << frame_id << " is_ad: " << is_ad
+            << ", arguments: " << arguments;
   }
 
   ScriptPosition script_position;
@@ -2019,7 +2049,7 @@ void PageGraph::RegisterJSBuiltInCall(blink::ExecutionContext* receiver_context,
   NodeJSBuiltin* js_builtin_node = GetJSBuiltinNode(builtin_name);
 
   AddEdge<EdgeJSCall>(static_cast<NodeScriptLocal*>(acting_node),
-                      js_builtin_node, frame_id, arguments, script_position);
+                      js_builtin_node, frame_id, arguments, script_position, is_ad);
 }
 
 void PageGraph::RegisterJSBuiltInResponse(
@@ -2027,8 +2057,14 @@ void PageGraph::RegisterJSBuiltInResponse(
     const char* builtin_name,
     const blink::PageGraphValue& result) {
   FrameId frame_id = GetFrameId(receiver_context);
+
+  // TODO: why receiver context?
+  AdTracker* tracker = AdTracker::FromExecutionContext(receiver_context);  
+  const bool is_ad = tracker && tracker->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop);
+
   VLOG(2) << "RegisterJSBuiltInResponse) built in: " << builtin_name
-          << ", frame id: " << frame_id << ", result: " << result;
+          << ", frame id: " << frame_id << ", is_ad: " << is_ad
+          << ", result: " << result;
 
   NodeActor* const caller_node = GetCurrentActingNode(receiver_context);
   if (!IsA<NodeScript>(caller_node)) {
@@ -2040,7 +2076,7 @@ void PageGraph::RegisterJSBuiltInResponse(
   NodeJSBuiltin* js_builtin_node = GetJSBuiltinNode(builtin_name);
   AddEdge<EdgeJSResult>(js_builtin_node,
                         static_cast<NodeScriptLocal*>(caller_node), frame_id,
-                        result);
+                        result, is_ad);
 }
 
 void PageGraph::RegisterBindingEvent(blink::ExecutionContext* execution_context,

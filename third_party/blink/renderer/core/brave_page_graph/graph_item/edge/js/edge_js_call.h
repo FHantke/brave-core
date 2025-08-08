@@ -23,7 +23,8 @@ class EdgeJSCall final : public EdgeJS {
              NodeJS* in_node,
              const FrameId& frame_id,
              const blink::PageGraphValues& arguments,
-             const int script_position);
+             const int script_position,
+             const bool is_ad);
 
   ~EdgeJSCall() override;
 
@@ -44,6 +45,7 @@ class EdgeJSCall final : public EdgeJS {
  private:
   const std::string arguments_;
   const int script_position_;
+  const bool is_ad_;
 };
 
 }  // namespace brave_page_graph

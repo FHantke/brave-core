@@ -21,9 +21,11 @@ EdgeJSResult::EdgeJSResult(GraphItemContext* context,
                            NodeJS* out_node,
                            NodeScript* in_node,
                            const FrameId& frame_id,
-                           const blink::PageGraphValue& result)
+                           const blink::PageGraphValue& result,
+                           const bool is_ad)
     : EdgeJS(context, out_node, in_node, frame_id),
-      result_(blink::PageGraphValueToString(result)) {}
+      result_(blink::PageGraphValueToString(result)),
+      is_ad_(is_ad) {}
 
 EdgeJSResult::~EdgeJSResult() = default;
 
@@ -42,6 +44,9 @@ void EdgeJSResult::AddGraphMLAttributes(xmlDocPtr doc,
   EdgeJS::AddGraphMLAttributes(doc, parent_node);
   GraphMLAttrDefForType(kGraphMLAttrDefValue)
       ->AddValueNode(doc, parent_node, result_);
+
+  GraphMLAttrDefForType(kGraphMLAttrDefIsAd)
+  ->AddValueNode(doc, parent_node, is_ad_);
 }
 
 const std::string& EdgeJSResult::GetResult() const {

@@ -23,7 +23,8 @@ class EdgeJSResult final : public EdgeJS {
                NodeJS* out_node,
                NodeScript* in_node,
                const FrameId& frame_id,
-               const blink::PageGraphValue& result);
+               const blink::PageGraphValue& result,
+               const bool is_ad);
 
   ~EdgeJSResult() override;
 
@@ -39,6 +40,7 @@ class EdgeJSResult final : public EdgeJS {
 
  private:
   const std::string result_;
+  const bool is_ad_;
 };
 
 }  // namespace brave_page_graph

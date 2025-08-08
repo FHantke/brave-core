@@ -21,10 +21,12 @@ EdgeJSCall::EdgeJSCall(GraphItemContext* context,
                        NodeJS* in_node,
                        const FrameId& frame_id,
                        const blink::PageGraphValues& arguments,
-                       const int script_position)
+                       const int script_position,
+                       const bool is_ad)
     : EdgeJS(context, out_node, in_node, frame_id),
       arguments_(blink::PageGraphValueToString(arguments)),
-      script_position_(script_position) {}
+      script_position_(script_position),
+      is_ad_(is_ad) {}
 
 EdgeJSCall::~EdgeJSCall() = default;
 
@@ -50,6 +52,8 @@ void EdgeJSCall::AddGraphMLAttributes(xmlDocPtr doc,
       ->AddValueNode(doc, parent_node, arguments_);
   GraphMLAttrDefForType(kGraphMLAttrDefScriptPosition)
       ->AddValueNode(doc, parent_node, script_position_);
+  GraphMLAttrDefForType(kGraphMLAttrDefIsAd)
+      ->AddValueNode(doc, parent_node, is_ad_);
 }
 
 bool EdgeJSCall::IsEdgeJSCall() const {
