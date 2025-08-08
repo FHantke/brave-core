@@ -1,0 +1,20 @@
+diff --git a/third_party/blink/renderer/core/html/parser/html_preload_scanner.cc b/third_party/blink/renderer/core/html/parser/html_preload_scanner.cc
+index ba3344ee1aadbfac799aecac0e3065a4664277bd..bc8126b0223c72cebf6dd52e2d05f1a8a0db7706 100644
+--- a/third_party/blink/renderer/core/html/parser/html_preload_scanner.cc
++++ b/third_party/blink/renderer/core/html/parser/html_preload_scanner.cc
+@@ -248,6 +248,15 @@ class TokenPreloadScanner::StartTagScanner {
+       const PreloadRequest::ExclusionInfo* exclusion_info,
+       bool treat_links_as_in_body,
+       bool is_potentially_lcp_element) {
++
++    // I added this only to prevent preloading of images
++    LOG(ERROR) << "[TokenPreloadScanner::CreatePreloadRequest] called for "
++                 << predicted_base_url.GetString().Utf8()
++                 << " with tag_impl: " << tag_impl_;
++
++    if (Match(tag_impl_, html_names::kImgTag))
++        return nullptr;
++
+     PreloadRequest::RequestType request_type =
+         PreloadRequest::kRequestTypePreload;
+     std::optional<ResourceType> type;
