@@ -1,0 +1,20 @@
+diff --git a/third_party/blink/renderer/core/dom/node.h b/third_party/blink/renderer/core/dom/node.h
+index 13ea9eac2a8fa1127f0adaf34a9db6e2df450cf9..f360e56853952524a763bb748cd1e455869b80c8 100644
+--- a/third_party/blink/renderer/core/dom/node.h
++++ b/third_party/blink/renderer/core/dom/node.h
+@@ -206,6 +206,15 @@ class CORE_EXPORT Node : public EventTarget {
+   // assigned, otherwise, assigns a new DOMNodeID and return that.
+   DOMNodeId GetDomNodeId();
+ 
++  bool _is_ad_tracker_tagged_node_ = false;
++  bool IsAdTrackerTaggedNode() {
++    return _is_ad_tracker_tagged_node_;
++  }
++  void setAdTrackerTaggedNode(bool is_ad_tracker_tagged_node) {
++    _is_ad_tracker_tagged_node_ = is_ad_tracker_tagged_node;
++  }
++
++
+   // DOM methods & attributes for Node
+ 
+   bool HasTagName(const HTMLQualifiedName&) const;

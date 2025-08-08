@@ -20,13 +20,16 @@ void HTMLImageElement::SelectSourceURL(
     const bool is_ad = tracker && tracker->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop);
     LocalFrame* frame = GetDocument().GetFrame();
     const bool is_ad_frame = frame && frame->IsAdFrame();
-        
+    const bool is_ad_tracker_tagged_element = Element::IsAdTrackerTagged();
+    const bool is_ad_tracker_tagged_node = Node::IsAdTrackerTaggedNode();
+
     LOG(ERROR) << "[HTMLImageElement::SelectSourceURL]: "
     << "Best fit image URL: " << best_fit_image_url_.GetString()
     << ", is ad: " << is_ad
     << ", is ad frame: " << is_ad_frame;
 
-    if (is_ad || is_ad_frame) {
+    if (is_ad || is_ad_frame || is_ad_tracker_tagged_node || is_ad_tracker_tagged_element) {
+    // if (is_ad || is_ad_frame) {
         LOG(ERROR) << "[HTMLImageElement::SelectSourceURL] Blocked image load from JS context.";
         return;
     }

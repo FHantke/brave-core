@@ -1,0 +1,19 @@
+diff --git a/third_party/blink/renderer/core/dom/element.h b/third_party/blink/renderer/core/dom/element.h
+index c07f4b62de15d9f0d7b8ae8d7f28801c08408745..9865b50cdb1baa9c6b857db1d7a611d750fd87f6 100644
+--- a/third_party/blink/renderer/core/dom/element.h
++++ b/third_party/blink/renderer/core/dom/element.h
+@@ -275,6 +275,14 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
+   bool hasAttribute(const QualifiedName&) const;
+   const AtomicString& getAttribute(const QualifiedName&) const;
+ 
++  bool _is_ad_tracker_tagged_ = false;
++  bool IsAdTrackerTagged() {
++    return _is_ad_tracker_tagged_;
++  }
++  void setAdTrackerTagged(bool is_ad_tracker_tagged) {
++    _is_ad_tracker_tagged_ = is_ad_tracker_tagged;
++  }
++
+   // Set an attribute without Trusted Type validation. Passing g_null_atom
+   // is the same as removing the attribute. This should only be used directly
+   // if we know the `QualifiedName` is not a special attribute.

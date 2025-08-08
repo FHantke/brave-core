@@ -1,0 +1,106 @@
+diff --git a/third_party/blink/renderer/core/dom/element.cc b/third_party/blink/renderer/core/dom/element.cc
+index 8e086fe51f9e981616cba976408a21d4f204b120..5c2006061e7ace173d2456d3ea09cba65c40e734 100644
+--- a/third_party/blink/renderer/core/dom/element.cc
++++ b/third_party/blink/renderer/core/dom/element.cc
+@@ -569,7 +569,34 @@ Element::Element(const QualifiedName& tag_name,
+                  ConstructionType type)
+     : ContainerNode(document, type),
+       tag_name_(tag_name),
+-      computed_style_(nullptr) {}
++      computed_style_(nullptr) {
++        ExecutionContext* context = GetExecutionContext();
++        AdTracker* tracker = AdTracker::FromExecutionContext(context);
++        const bool is_ad = tracker && tracker->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop);
++        LocalFrame* frame = document->GetFrame();
++        const bool is_ad_frame = frame && frame->IsAdFrame();
++
++        if (is_ad || is_ad_frame) {
++          _is_ad_tracker_tagged_ = true;
++        }
++        LOG(ERROR) << "Element::Element() is called for " << tag_name_.LocalName()
++                  // << ", URL: " << frame->GetDocument()->Url().GetString()
++                  << " with is_ad_tracker_tagged: " << _is_ad_tracker_tagged_
++                  << " is_ad: " << is_ad
++                  << " is_ad_frame: " << is_ad_frame;
++        if (HasElementData()) {
++          const AtomicString& id = GetIdAttribute();
++          if (!id.IsNull()) {
++            LOG(ERROR) << "Element ID: " << id;
++          }
++
++          AttributeCollection attributes = Attributes();
++          for (const Attribute& attribute : attributes) {
++            LOG(ERROR) << "Attribute: " << attribute.GetName().LocalName()
++                        << " = " << attribute.Value();
++          }
++        }
++      }
+ 
+ Element* Element::GetAnimationTarget() {
+   return this;
+@@ -850,6 +877,9 @@ Node* Element::Clone(Document& factory,
+                      NodeCloningData& data,
+                      ContainerNode* append_to,
+                      ExceptionState& append_exception_state) const {
++  LOG(ERROR) << "Element::Clone() called for "
++            << TagQName().LocalName()
++            << " with is_ad_tracker_tagged: " << _is_ad_tracker_tagged_;
+   Element* copy;
+   if (!data.Has(CloneOption::kIncludeDescendants)) {
+     copy = &CloneWithoutChildren(data, &factory);
+@@ -955,8 +985,16 @@ Element& Element::CloneWithoutChildren(NodeCloningData& data,
+ }
+ 
+ Element& Element::CloneWithoutAttributesAndChildren(Document& factory) const {
+-  return *factory.CreateElement(TagQName(), CreateElementFlags::ByCloneNode(),
+-                                IsValue());
++  LOG(ERROR) << "Element::CloneWithoutAttributesAndChildren() called for "
++            << TagQName().LocalName()
++            << " with is_ad_tracker_tagged: " << _is_ad_tracker_tagged_;
++  Element* clone = factory.CreateElement(TagQName(), CreateElementFlags::ByCloneNode(),
++                    IsValue());
++  clone->setAdTrackerTagged(_is_ad_tracker_tagged_);
++
++  return *clone;
++  // return *factory.CreateElement(TagQName(), CreateElementFlags::ByCloneNode(),
++  //                               IsValue());
+ }
+ 
+ Attr* Element::DetachAttribute(wtf_size_t index) {
+@@ -8018,18 +8056,36 @@ void Element::SetInnerHTMLInternal(
+   if (html.empty() && !HasNonInBodyInsertionMode()) {
+     setTextContent(html);
+   } else {
++    /*
++    LOG(ERROR) << "Element::SetInnerHTMLInternal called with non-empty "
++              << "html content while the element is not in the body "
++              << "insertion mode.";
++    */
+     if (DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
+             html, this, kAllowScriptingContent, parse_declarative_shadows,
+             force_html, exception_state)) {
++      // LOG(ERROR) << "Element::SetInnerHTMLInternal created 1";
++      
++      // fragment->SetAdTrackerTagged(true);
+       ContainerNode* container = this;
++      // container->setAdTrackerTaggedNode(true);
+       bool swap_dom_parts{false};
+       if (auto* template_element = DynamicTo<HTMLTemplateElement>(*this)) {
+         container = template_element->content();
++        // container->setAdTrackerTaggedNode(true);
++
++        // LOG(ERROR) << "Element::SetInnerHTMLInternal created 2";
+         swap_dom_parts =
+             RuntimeEnabledFeatures::DOMPartsAPIEnabled() &&
+             template_element->hasAttribute(html_names::kParsepartsAttr);
++
++            // LOG(ERROR) << "Element::SetInnerHTMLInternal created 3";
+       }
++
++      // LOG(ERROR) << "Element::SetInnerHTMLInternal created 4";
+       ReplaceChildrenWithFragment(container, fragment, exception_state);
++
++      // LOG(ERROR) << "Element::SetInnerHTMLInternal created 5";
+       if (swap_dom_parts &&
+           !RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled()) {
+         // Move the parts list over to the template's content document's

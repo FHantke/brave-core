@@ -1,0 +1,276 @@
+diff --git a/third_party/blink/renderer/core/dom/node.cc b/third_party/blink/renderer/core/dom/node.cc
+index 668674369f8e5f1b31bda8777884ece380c8df2b..2c705381af90c24f653a957d93b98b8356bfe0fc 100644
+--- a/third_party/blink/renderer/core/dom/node.cc
++++ b/third_party/blink/renderer/core/dom/node.cc
+@@ -169,6 +169,7 @@ struct SameSizeAsNode : EventTarget {
+   uint32_t node_flags_;
+   subtle::UncompressedMember<int> uncompressed[2];
+   Member<void*> members[4];
++  bool test;
+ };
+ 
+ ASSERT_SIZE(Node, SameSizeAsNode);
+@@ -339,6 +340,33 @@ Node::Node(TreeScope* tree_scope, ConstructionType type)
+   // Document is required for probe sink.
+   if (tree_scope_)
+     probe::NodeCreated(this);
++
++  
++  if (tree_scope_) {
++    // LOG(ERROR) << "Node::Node() is called 1";
++    // LOG(ERROR) << "Node::Node(): type: " << type;
++
++    ExecutionContext* context = GetExecutionContext();
++
++    // LOG(ERROR) << "Node::Node() is called 2";
++    AdTracker* tracker = AdTracker::FromExecutionContext(context);
++    // LOG(ERROR) << "Node::Node() is called 3";
++    const bool is_ad = tracker && tracker->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop);
++    // LOG(ERROR) << "Node::Node() is called 4";
++    
++    LocalFrame* frame = GetDocument().GetFrame();
++    // LOG(ERROR) << "Node::Node() is called 5";
++    const bool is_ad_frame = frame && frame->IsAdFrame();
++    // LOG(ERROR) << "Node::Node() is called 6";
++
++    LOG(ERROR) << "[Node::Node] Node::Node() is called"
++               << ", _is_ad: " << is_ad
++               << ", _is_ad_frame: " << is_ad_frame;
++    if (is_ad || is_ad_frame) {
++      _is_ad_tracker_tagged_node_ = true;
++    }
++  }
++  // LOG(ERROR) << "Node::Node() is called 7";
+ }
+ 
+ Node::~Node() {
+@@ -905,8 +933,43 @@ Node* Node::replaceChild(Node* new_child,
+                          Node* old_child,
+                          ExceptionState& exception_state) {
+   auto* this_node = DynamicTo<ContainerNode>(this);
+-  if (this_node)
++  if (this_node) {
++    /*
++    ExecutionContext* context = GetExecutionContext();
++    AdTracker* tracker = AdTracker::FromExecutionContext(context);
++    const bool is_ad = tracker && tracker->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop);
++
++    LOG(ERROR) << "Node::replaceChild() is called, is_ad: " << is_ad;
++    LOG(ERROR) << "Node::replaceChild(): Node name: " << new_child->nodeName();
++    
++    if (new_child->IsElementNode()) {
++      auto* element = To<Element>(new_child);
++      if (element->HasID()) {
++        LOG(ERROR) << "Node::replaceChild(): Node id: " << element->GetIdAttribute();
++      }
++
++      element->setAdTrackerTagged(element->IsAdTrackerTagged() || is_ad);
++    }
++
++    new_child->setAdTrackerTaggedNode(new_child->IsAdTrackerTaggedNode() || is_ad);
++
++    
++    NodeList* children = new_child->childNodes();
++    for (unsigned int i = 0; i < children->length(); ++i) {
++      Node* child = children->item(i);
++      if (!child)
++        continue; 
++    
++      child->setAdTrackerTaggedNode(is_ad || child->IsAdTrackerTaggedNode());
++
++      if (child->IsElementNode()) {
++        auto* element = To<Element>(child);
++        element->setAdTrackerTagged(element->IsAdTrackerTagged() || is_ad);
++      }
++    }
++    */
+     return this_node->ReplaceChild(new_child, old_child, exception_state);
++  }
+ 
+   exception_state.ThrowDOMException(
+       DOMExceptionCode::kHierarchyRequestError,
+@@ -935,8 +998,48 @@ Node* Node::removeChild(Node* old_child) {
+ 
+ Node* Node::appendChild(Node* new_child, ExceptionState& exception_state) {
+   auto* this_node = DynamicTo<ContainerNode>(this);
+-  if (this_node)
++  /*
++  if (this_node) {
++    // Not sure if this is needed
++    ExecutionContext* context = GetExecutionContext();
++    AdTracker* tracker = AdTracker::FromExecutionContext(context);
++    const bool is_ad = tracker && tracker->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop);
++    
++    // LocalFrame* frame = GetDocument().GetFrame();
++    // const bool is_ad_frame = frame && frame->IsAdFrame();
++
++    LOG(ERROR) << "Node::appendChild() is called, is_ad: " << is_ad;
++    LOG(ERROR) << "Node::appendChild(): Node name: " << new_child->nodeName();
++    
++    if (new_child->IsElementNode()) {
++      auto* element = To<Element>(new_child);
++      if (element->HasID()) {
++        LOG(ERROR) << "Node::appendChild(): Node id: " << element->GetIdAttribute();
++      }
++
++      element->setAdTrackerTagged(element->IsAdTrackerTagged() || is_ad);
++    }
++    
++    new_child->setAdTrackerTaggedNode(new_child->IsAdTrackerTaggedNode() || is_ad);
++    
++    NodeList* children = new_child->childNodes();
++    for (unsigned int i = 0; i < children->length(); ++i) {
++      Node* child = children->item(i);
++      if (!child)
++        continue; 
++    
++      // child->setAdTrackerTaggedNode(_is_ad_tracker_tagged_node_ || child->IsAdTrackerTaggedNode());
++      child->setAdTrackerTaggedNode(child->IsAdTrackerTaggedNode() || is_ad);
++
++      if (child->IsElementNode()) {
++        auto* element = To<Element>(child);
++        element->setAdTrackerTagged(element->IsAdTrackerTagged() || is_ad);
++      }
++    }
++    */                        
++  if (this_node) 
+     return this_node->AppendChild(new_child, exception_state);
++  // }
+ 
+   exception_state.ThrowDOMException(
+       DOMExceptionCode::kHierarchyRequestError,
+@@ -1147,6 +1250,49 @@ void Node::append(
+   if (exception_state.HadException()) {
+     return;
+   }
++
++  /*
++  // Not sure if this is needed
++  ExecutionContext* context = GetExecutionContext();
++  AdTracker* tracker = AdTracker::FromExecutionContext(context);
++  const bool is_ad = tracker && tracker->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop);
++
++  // LocalFrame* frame = GetDocument().GetFrame();
++  // const bool is_ad_frame = frame && frame->IsAdFrame();
++
++  LOG(ERROR) << "Node::append() is called, is_ad: " << is_ad;
++    
++  for (Node* new_child : node_vector) {
++    LOG(ERROR) << "Node::append(): Node name: " << new_child->nodeName();
++    
++    if (new_child->IsElementNode()) {
++      auto* element = To<Element>(new_child);
++      if (element->HasID()) {
++        LOG(ERROR) << "Node::append(): Node id: " << element->GetIdAttribute();
++      }
++
++      element->setAdTrackerTagged(element->IsAdTrackerTagged() || is_ad);
++    }
++    
++    new_child->setAdTrackerTaggedNode(new_child->IsAdTrackerTaggedNode() || is_ad);
++    
++    NodeList* children = new_child->childNodes();
++    for (unsigned int i = 0; i < children->length(); ++i) {
++      Node* child = children->item(i);
++      if (!child)
++        continue; 
++    
++      // child->setAdTrackerTaggedNode(_is_ad_tracker_tagged_node_ || child->IsAdTrackerTaggedNode());
++      child->setAdTrackerTaggedNode(child->IsAdTrackerTaggedNode() || is_ad);
++
++      if (child->IsElementNode()) {
++        auto* element = To<Element>(child);
++        element->setAdTrackerTagged(element->IsAdTrackerTagged() || is_ad);
++      }
++    }
++  }
++  */
++
+   this_node->AppendChildren(node_vector, exception_state);
+ }
+ 
+@@ -1196,6 +1342,33 @@ void Node::replaceWith(
+   if (exception_state.HadException()) {
+     return;
+   }
++/*
++  ExecutionContext* context = GetExecutionContext();
++  AdTracker* tracker = AdTracker::FromExecutionContext(context);
++  const bool is_ad = tracker && tracker->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop);
++
++  for (Node* node : node_vector) {
++    node->setAdTrackerTaggedNode(node->IsAdTrackerTaggedNode() || is_ad);
++    if (node->IsElementNode()) {
++      auto* element = To<Element>(node);
++      element->setAdTrackerTagged(element->IsAdTrackerTagged() || is_ad);
++    }
++
++    NodeList* children = node->childNodes();
++    for (unsigned int i = 0; i < children->length(); ++i) {
++      Node* child = children->item(i);
++      if (!child)
++        continue;
++
++      child->setAdTrackerTaggedNode(child->IsAdTrackerTaggedNode() || is_ad);
++      if (child->IsElementNode()) {
++        auto* element = To<Element>(child);
++        element->setAdTrackerTagged(element->IsAdTrackerTagged() || is_ad);
++      }
++    }
++  }
++  */
++
+   if (parent == parentNode()) {
+     parent->ReplaceChild(node_vector, this, exception_state);
+   } else {
+@@ -1220,6 +1393,34 @@ void Node::replaceChildren(
+   if (exception_state.HadException()) {
+     return;
+   }
++
++  /*
++  ExecutionContext* context = GetExecutionContext();
++  AdTracker* tracker = AdTracker::FromExecutionContext(context);
++  const bool is_ad = tracker && tracker->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop);
++
++  for (Node* node : nodes) {
++    node->setAdTrackerTaggedNode(node->IsAdTrackerTaggedNode() || is_ad);
++    if (node->IsElementNode()) {
++      auto* element = To<Element>(node);
++      element->setAdTrackerTagged(element->IsAdTrackerTagged() || is_ad);
++    }
++
++    NodeList* children = node->childNodes();
++    for (unsigned int i = 0; i < children->length(); ++i) {
++      Node* child = children->item(i);
++      if (!child)
++        continue;
++
++      child->setAdTrackerTaggedNode(child->IsAdTrackerTaggedNode() || is_ad);
++      if (child->IsElementNode()) {
++        auto* element = To<Element>(child);
++        element->setAdTrackerTagged(element->IsAdTrackerTagged() || is_ad);
++      }
++    }
++  }
++  */
++
+   this_node->ReplaceChildren(nodes, exception_state);
+ }
+ 
+@@ -1257,7 +1458,14 @@ Node* Node::cloneNode(bool deep, ExceptionState& exception_state) const {
+   if (deep) {
+     data.Put(CloneOption::kIncludeDescendants);
+   }
+-  return Clone(GetDocument(), data, /*append_to*/ nullptr);
++
++  // LOG(ERROR) << "Node::cloneNode: Cloning node 1";
++  Node* new_node = Clone(GetDocument(), data, /*append_to*/ nullptr);  
++  // LOG(ERROR) << "Node::cloneNode: Cloning node 2. Set ad tracker tagged node to "
++  //            << _is_ad_tracker_tagged_node_;
++  new_node->setAdTrackerTaggedNode(_is_ad_tracker_tagged_node_);
++  
++  return new_node;
+ }
+ 
+ Node* Node::cloneNode(bool deep) const {
