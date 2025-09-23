@@ -19,7 +19,8 @@ class EdgeStorageClear final : public EdgeStorage {
   EdgeStorageClear(GraphItemContext* context,
                    NodeActor* out_node,
                    NodeStorage* in_node,
-                   const FrameId& frame_id);
+                   const FrameId& frame_id,
+                   const bool is_ad);
   ~EdgeStorageClear() override;
 
   ItemName GetItemName() const override;

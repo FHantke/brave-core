@@ -18,8 +18,9 @@ EdgeStorageReadResult::EdgeStorageReadResult(GraphItemContext* context,
                                              NodeActor* in_node,
                                              const FrameId& frame_id,
                                              const String& key,
-                                             const blink::PageGraphValue& value)
-    : EdgeStorage(context, out_node, in_node, frame_id, key),
+                                             const blink::PageGraphValue& value,
+                                             const bool is_ad)
+    : EdgeStorage(context, out_node, in_node, frame_id, key, is_ad),
       value_(blink::PageGraphValueToString(value)) {
   CHECK(!in_node->IsNodeParser());
 }

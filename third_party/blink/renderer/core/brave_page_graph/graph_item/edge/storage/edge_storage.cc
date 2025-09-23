@@ -16,8 +16,9 @@ EdgeStorage::EdgeStorage(GraphItemContext* context,
                          GraphNode* out_node,
                          GraphNode* in_node,
                          const FrameId& frame_id,
-                         const String& key)
-    : GraphEdge(context, out_node, in_node), frame_id_(frame_id), key_(key) {}
+                         const String& key,
+                         const bool is_ad)
+    : GraphEdge(context, out_node, in_node), frame_id_(frame_id), key_(key), is_ad_(is_ad) {}
 
 EdgeStorage::~EdgeStorage() = default;
 
@@ -39,6 +40,9 @@ void EdgeStorage::AddGraphMLAttributes(xmlDocPtr doc,
       ->AddValueNode(doc, parent_node, key_);
   GraphMLAttrDefForType(kGraphMLAttrDefEdgeFrameId)
       ->AddValueNode(doc, parent_node, frame_id_);
+
+  GraphMLAttrDefForType(kGraphMLAttrDefIsAd)
+      ->AddValueNode(doc, parent_node, is_ad_);
 }
 
 bool EdgeStorage::IsEdgeStorage() const {

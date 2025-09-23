@@ -14,8 +14,9 @@ namespace brave_page_graph {
 EdgeStorageClear::EdgeStorageClear(GraphItemContext* context,
                                    NodeActor* out_node,
                                    NodeStorage* in_node,
-                                   const FrameId& frame_id)
-    : EdgeStorage(context, out_node, in_node, frame_id, "") {
+                                   const FrameId& frame_id,
+                                  const bool is_ad)
+    : EdgeStorage(context, out_node, in_node, frame_id, "", is_ad) {
   CHECK(!out_node->IsNodeParser());
 }
 

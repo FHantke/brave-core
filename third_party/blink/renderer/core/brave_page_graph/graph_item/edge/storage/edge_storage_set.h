@@ -24,7 +24,8 @@ class EdgeStorageSet final : public EdgeStorage {
                  NodeStorage* in_node,
                  const FrameId& frame_id,
                  const String& key,
-                 const blink::PageGraphValue& value);
+                 const blink::PageGraphValue& value,
+                 const bool is_ad);
   ~EdgeStorageSet() override;
 
   const std::string& GetValue() const { return value_; }

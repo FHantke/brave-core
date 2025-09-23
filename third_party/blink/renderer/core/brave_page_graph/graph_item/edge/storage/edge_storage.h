@@ -20,7 +20,8 @@ class EdgeStorage : public GraphEdge {
               GraphNode* out_node,
               GraphNode* in_node,
               const FrameId& frame_id,
-              const String& key);
+              const String& key,
+              const bool is_ad);
   ~EdgeStorage() override;
 
   const String& GetKey() const { return key_; }
@@ -41,6 +42,7 @@ class EdgeStorage : public GraphEdge {
  private:
   const FrameId frame_id_;
   const String key_;
+  const bool is_ad_;
 };
 
 }  // namespace brave_page_graph

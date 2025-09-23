@@ -21,7 +21,8 @@ class EdgeStorageDelete final : public EdgeStorage {
                     NodeActor* out_node,
                     NodeStorage* in_node,
                     const FrameId& frame_id,
-                    const String& key);
+                    const String& key,
+                    const bool is_ad);
   ~EdgeStorageDelete() override;
 
   ItemName GetItemName() const override;

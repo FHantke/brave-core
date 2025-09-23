@@ -1882,10 +1882,13 @@ void PageGraph::RegisterStorageRead(blink::ExecutionContext* execution_context,
       break;
   }
 
+  AdTracker* tracker = AdTracker::FromExecutionContext(execution_context);  
+  const bool is_ad = tracker && tracker->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop);
+
   FrameId frame_id = GetFrameId(execution_context);
-  AddEdge<EdgeStorageReadCall>(acting_node, storage_node, frame_id, key);
+  AddEdge<EdgeStorageReadCall>(acting_node, storage_node, frame_id, key, is_ad);
   AddEdge<EdgeStorageReadResult>(storage_node, acting_node, frame_id, key,
-                                 value);
+                                 value, is_ad);
 }
 
 void PageGraph::RegisterStorageWrite(blink::ExecutionContext* execution_context,
@@ -1913,8 +1916,11 @@ void PageGraph::RegisterStorageWrite(blink::ExecutionContext* execution_context,
       break;
   }
 
+  AdTracker* tracker = AdTracker::FromExecutionContext(execution_context);  
+  const bool is_ad = tracker && tracker->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop);
+
   FrameId frame_id = GetFrameId(execution_context);
-  AddEdge<EdgeStorageSet>(acting_node, storage_node, frame_id, key, value);
+  AddEdge<EdgeStorageSet>(acting_node, storage_node, frame_id, key, value, is_ad);
 }
 
 void PageGraph::RegisterStorageDelete(
@@ -1941,8 +1947,11 @@ void PageGraph::RegisterStorageDelete(
       CHECK(location != StorageLocation::kCookie);
   }
 
+  AdTracker* tracker = AdTracker::FromExecutionContext(execution_context);  
+  const bool is_ad = tracker && tracker->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop);
+
   FrameId frame_id = GetFrameId(execution_context);
-  AddEdge<EdgeStorageDelete>(acting_node, storage_node, frame_id, key);
+  AddEdge<EdgeStorageDelete>(acting_node, storage_node, frame_id, key, is_ad);
 }
 
 void PageGraph::RegisterStorageClear(blink::ExecutionContext* execution_context,
@@ -1967,8 +1976,11 @@ void PageGraph::RegisterStorageClear(blink::ExecutionContext* execution_context,
       CHECK(location != StorageLocation::kCookie);
   }
 
+  AdTracker* tracker = AdTracker::FromExecutionContext(execution_context);  
+  const bool is_ad = tracker && tracker->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop);
+
   FrameId frame_id = GetFrameId(execution_context);
-  AddEdge<EdgeStorageClear>(acting_node, storage_node, frame_id);
+  AddEdge<EdgeStorageClear>(acting_node, storage_node, frame_id, is_ad);
 }
 
 void PageGraph::RegisterWebAPICall(blink::ExecutionContext* execution_context,
