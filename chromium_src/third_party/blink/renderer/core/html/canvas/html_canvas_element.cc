@@ -6,6 +6,7 @@
 #include "base/auto_reset.h"
 #include "brave/third_party/blink/renderer/core/farbling/brave_session_cache.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
+#include "third_party/blink/renderer/core/frame/ad_tracker.h"
 #include "ui/gfx/skia_span_util.h"
 
 #define BRAVE_TO_DATA_URL_INTERNAL                                          \
@@ -14,10 +15,15 @@
     if (!execution_context) {                                               \
       execution_context = scoped_execution_context_.Get();                  \
     }                                                                       \
-    if (execution_context) {                                                \
-      brave::BraveSessionCache::From(*execution_context)                    \
-          .PerturbPixels(                                                   \
-              gfx::SkPixmapToWritableSpan(data_buffer->pixmap_multable())); \
+    if (execution_context) {                        \
+      AdTracker* tracker = AdTracker::FromExecutionContext(execution_context); \
+      bool is_ad = tracker && tracker->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop); \
+      LOG(ERROR) << "[BRAVE_CANVAS_ASYNC_BLOB_CREATOR] Called from ad? " << (is_ad ? "YES" : "NO"); \
+      if (is_ad) {                                        \
+        brave::BraveSessionCache::From(*execution_context)                    \
+            .PerturbPixelsInternal(                                                   \
+                gfx::SkPixmapToWritableSpan(data_buffer->pixmap_multable())); \
+      }                                                                     \
     }                                                                       \
   }
 

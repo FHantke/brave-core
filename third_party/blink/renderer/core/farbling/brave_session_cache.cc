@@ -273,10 +273,10 @@ void BraveSessionCache::Init() {
 }
 
 std::optional<blink::BraveAudioFarblingHelper>
-BraveSessionCache::GetAudioFarblingHelper() {
+BraveSessionCache::GetAudioFarblingHelper(bool ignore_farbling_level) {
   const auto audio_farbling_level =
       GetBraveFarblingLevel(ContentSettingsType::BRAVE_WEBCOMPAT_AUDIO);
-  if (audio_farbling_level == BraveFarblingLevel::OFF) {
+  if (!ignore_farbling_level && audio_farbling_level == BraveFarblingLevel::OFF) {
     return std::nullopt;
   }
   if (!audio_farbling_helper_) {
@@ -293,7 +293,7 @@ BraveSessionCache::GetAudioFarblingHelper() {
 }
 
 void BraveSessionCache::FarbleAudioChannel(base::span<float> dst) {
-  const auto& audio_farbling_helper = GetAudioFarblingHelper();
+  const auto& audio_farbling_helper = GetAudioFarblingHelper(/*ignore_farbling_level = */true);
   if (audio_farbling_helper) {
     audio_farbling_helper->FarbleAudioChannel(dst);
   }

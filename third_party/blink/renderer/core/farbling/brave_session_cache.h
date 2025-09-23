@@ -84,6 +84,7 @@ class CORE_EXPORT BraveSessionCache final
       ContentSettingsType webcompat_settings_type);
   void FarbleAudioChannel(base::span<float> dst);
   void PerturbPixels(base::span<uint8_t> data);
+  void PerturbPixelsInternal(base::span<uint8_t> data);
   WTF::String GenerateRandomString(std::string seed, wtf_size_t length);
   WTF::String FarbledUserAgent(WTF::String real_user_agent);
   int FarbledInteger(FarbleKey key,
@@ -93,11 +94,9 @@ class CORE_EXPORT BraveSessionCache final
   bool AllowFontFamily(blink::WebContentSettingsClient* settings,
                        const AtomicString& family_name);
   FarblingPRNG MakePseudoRandomGenerator(FarbleKey key = FarbleKey::kNone);
-  std::optional<blink::BraveAudioFarblingHelper> GetAudioFarblingHelper();
+  std::optional<blink::BraveAudioFarblingHelper> GetAudioFarblingHelper(bool ignore_farbling_level = false);
 
  private:
-  void PerturbPixelsInternal(base::span<uint8_t> data);
-
   WTF::HashMap<FarbleKey, int> farbled_integers_;
   brave_shields::mojom::ShieldsSettingsPtr default_shields_settings_;
   std::optional<blink::BraveAudioFarblingHelper> audio_farbling_helper_;

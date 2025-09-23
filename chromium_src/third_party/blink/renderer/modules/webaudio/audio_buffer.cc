@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/modules/webaudio/analyser_node.h"
+#include "third_party/blink/renderer/core/frame/ad_tracker.h"
 
 #define BRAVE_AUDIOBUFFER_GETCHANNELDATA                                      \
   {                                                                           \
@@ -19,16 +20,27 @@
     base::span<float> dst = destination->AsSpan();                            \
     if (!dst.empty()) {                                                       \
       if (ExecutionContext* context = ExecutionContext::From(script_state)) { \
-        brave::BraveSessionCache::From(*context).FarbleAudioChannel(dst);     \
+        AdTracker* tracker = AdTracker::FromExecutionContext(context); \
+        bool is_ad = tracker && tracker->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop); \
+        LOG(ERROR) << "[BRAVE_AUDIOBUFFER_GETCHANNELDATA] Called from ad? " << (is_ad ? "YES" : "NO"); \
+        if (is_ad) { \
+          brave::BraveSessionCache::From(*context).FarbleAudioChannel(dst);     \
+        }                                                                   \
       }                                                                       \
     }                                                                         \
   }
 
 #define BRAVE_AUDIOBUFFER_COPYFROMCHANNEL                                 \
   if (ExecutionContext* context = ExecutionContext::From(script_state)) { \
-    brave::BraveSessionCache::From(*context).FarbleAudioChannel(          \
-        dst.first(count));                                                \
+    AdTracker* tracker = AdTracker::FromExecutionContext(context); \
+    bool is_ad = tracker && tracker->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop); \
+    LOG(ERROR) << "[BRAVE_AUDIOBUFFER_COPYFROMCHANNEL] Called from ad? " << (is_ad ? "YES" : "NO"); \
+    if (is_ad) { \
+      brave::BraveSessionCache::From(*context).FarbleAudioChannel(          \
+          dst.first(count));                                                \
+    } \
   }
+
 
 #include "src/third_party/blink/renderer/modules/webaudio/audio_buffer.cc"
 

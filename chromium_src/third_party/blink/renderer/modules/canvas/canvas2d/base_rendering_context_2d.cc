@@ -9,8 +9,10 @@
 #include "brave/third_party/blink/renderer/core/farbling/brave_session_cache.h"
 #include "third_party/blink/renderer/platform/graphics/image_data_buffer.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/core/frame/ad_tracker.h"
 #include "ui/gfx/skia_span_util.h"
 
+/*
 namespace {
 
 bool IsGoogleMaps(const blink::KURL& url) {
@@ -23,12 +25,16 @@ bool IsGoogleMaps(const blink::KURL& url) {
 }
 
 }  // namespace
+*/
 
 #define BRAVE_GET_IMAGE_DATA                                              \
   if (ExecutionContext* context = ExecutionContext::From(script_state)) { \
-    if (!IsGoogleMaps(context->Url())) {                                  \
+    AdTracker* tracker = AdTracker::FromExecutionContext(context); \
+    bool is_ad = tracker && tracker->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop); \
+    LOG(ERROR) << "[BRAVE_GET_IMAGE_DATA] Called from ad? " << (is_ad ? "YES" : "NO"); \
+    if (is_ad) { \
       SkPixmap image_data_pixmap = image_data->GetSkPixmap();             \
-      brave::BraveSessionCache::From(*context).PerturbPixels(             \
+      brave::BraveSessionCache::From(*context).PerturbPixelsInternal(     \
           gfx::SkPixmapToWritableSpan(image_data_pixmap));                \
     }                                                                     \
   }
